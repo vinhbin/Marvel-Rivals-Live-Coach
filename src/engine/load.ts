@@ -188,6 +188,16 @@ export type Resolution =
 const MASK = /^\*+$/;
 
 /**
+ * Whether a roster name is MASKED (a `*****`/empty slot — Diamond 3+ pre-round, or an early/unseen
+ * GEP value). The single source of truth for "masked" across the engine + GEP boundary so the two
+ * never drift. A non-masked name is one we can compare/resolve.
+ */
+export function isMaskedName(raw: string): boolean {
+  const t = raw.trim();
+  return t === "" || MASK.test(t);
+}
+
+/**
  * Resolve a raw roster string (GEP name / alias / canonical key) to a canonical key.
  *
  * D-012: a name whose alias maps to a key that COLLIDES with an unresolved GEP collision
@@ -197,7 +207,7 @@ const MASK = /^\*+$/;
  */
 export function resolveName(raw: string, kb: LoadedKb): Resolution {
   const trimmed = raw.trim();
-  if (trimmed === "" || MASK.test(trimmed)) return { status: "masked" };
+  if (isMaskedName(trimmed)) return { status: "masked" };
 
   // Direct canonical key hit.
   if (kb.roleOf.has(trimmed)) {

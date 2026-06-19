@@ -10,7 +10,7 @@
   "scripts": {
     "validate": "tsx src/schema/validate.ts",
     "typecheck": "tsc --noEmit",
-    "test": "tsx --test test/engine.test.ts test/postgame.test.ts"
+    "test": "tsx --test test/engine.test.ts test/postgame.test.ts test/gep.test.ts"
   },
   "devDependencies": {
     "@types/node": "^20.14.0",
