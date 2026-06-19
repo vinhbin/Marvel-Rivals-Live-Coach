@@ -1,0 +1,125 @@
+{
+  "meta": {
+    "component": "3 of 3 — Comp-gap / function-coverage model",
+    "siblings": ["rivals_counter_kb.json (enemy threats -> counters)", "ult-combo table (synergistic ults — still a stub)"],
+    "purpose": "Read YOUR team's live picks + teammate playstyle, find functional gaps in the comp, and recommend a pick/swap from the user's comfort pool that closes the biggest gap.",
+    "compliance": "OUTPUT IS ALWAYS A PICK OR SWAP, NEVER A BAN. Uses only your-side roster data (character_name) + optional public profile history for playstyle. No enemy confidential data.",
+    "shelf_life": "Function tags are fairly durable; re-check after major reworks. Strength weighting comes from the patch overlay, not here.",
+    "engine_note": "Same weighted set-cover as the counter engine. There it covers enemy threats; here it covers comp functions. The two can run together: weight a gap higher when the enemy comp punishes it (cross-reference counter_kb)."
+  },
+
+  "comp_functions": {
+    "frontline_space":        { "label": "Frontline / space control", "ideal_providers": 2, "why": "Hold or take ground; without it the team gets run over." },
+    "sustain_healing":        { "label": "Sustain / healing throughput", "ideal_providers": 2, "why": "Keep the team alive through fights; <2 strategists usually folds." },
+    "anti_dive_peel":         { "label": "Anti-dive / backline peel", "ideal_providers": 1, "why": "Protect squishies from divers; the classic 'answer hero' role." },
+    "anti_flyer_grounding":   { "label": "Anti-flyer / grounding", "ideal_providers": 1, "why": "Answer to permaflyers (Human Torch, Storm, Angela, Iron Man)." },
+    "burst_pick":             { "label": "Burst / pick threat", "ideal_providers": 1, "why": "Ability to delete a priority target and break a stalemate." },
+    "range_poke":             { "label": "Poke / range", "ideal_providers": 1, "why": "Win neutral and chip from distance before committing." },
+    "dive_flank":             { "label": "Dive / flank pressure", "ideal_providers": 1, "why": "Threaten the enemy backline; forces their peel." },
+    "zone_wall":              { "label": "Zone / wall presence or break", "ideal_providers": 0, "why": "Deny space (Groot/Peni/Squirrel) or break walls; situational." },
+    "anti_heal":              { "label": "Anti-heal", "ideal_providers": 0, "why": "Counter sustain-brawl (Dino, Blade); situational but swingy." },
+    "ult_denial_defensive":   { "label": "Defensive / ult-denial ult", "ideal_providers": 1, "why": "A defensive ult to survive or trade enemy ults." }
+  },
+
+  "hero_functions": {
+    "comment": "Seed set spanning every function. Extend to full roster; verify tags via the LLM council. Each hero lists the functions it MEANINGFULLY provides (not every theoretical use).",
+    "Thing":            ["frontline_space", "anti_dive_peel"],
+    "Peni Parker":      ["anti_dive_peel", "zone_wall", "frontline_space"],
+    "Magneto":          ["frontline_space", "range_poke", "ult_denial_defensive"],
+    "Groot":            ["frontline_space", "zone_wall"],
+    "Doctor Strange":   ["frontline_space", "burst_pick"],
+    "Hulk":             ["frontline_space", "dive_flank", "anti_dive_peel"],
+    "Venom":            ["frontline_space", "dive_flank"],
+    "Thor":             ["frontline_space", "dive_flank", "anti_flyer_grounding"],
+    "Captain America":  ["frontline_space", "dive_flank"],
+    "Devil Dinosaur":   ["frontline_space", "anti_dive_peel"],
+    "Rogue":            ["frontline_space", "dive_flank", "anti_dive_peel"],
+    "Luna":             ["sustain_healing", "ult_denial_defensive", "anti_dive_peel"],
+    "Mantis":           ["sustain_healing", "burst_pick", "ult_denial_defensive"],
+    "Invisible Woman":  ["sustain_healing", "anti_dive_peel", "ult_denial_defensive"],
+    "Cloak and Dagger": ["sustain_healing", "ult_denial_defensive"],
+    "Rocket":           ["sustain_healing"],
+    "Adam":             ["sustain_healing", "ult_denial_defensive"],
+    "Loki":             ["sustain_healing", "ult_denial_defensive"],
+    "White Fox":        ["sustain_healing", "anti_dive_peel"],
+    "Punisher":         ["range_poke", "burst_pick", "anti_flyer_grounding"],
+    "Hela":             ["range_poke", "burst_pick", "anti_flyer_grounding"],
+    "Hawkeye":          ["range_poke", "burst_pick", "anti_flyer_grounding"],
+    "Bucky":            ["range_poke", "burst_pick", "anti_flyer_grounding"],
+    "Star-Lord":        ["range_poke", "dive_flank", "burst_pick"],
+    "Psylocke":         ["dive_flank", "burst_pick"],
+    "Spider-Man":       ["dive_flank", "burst_pick"],
+    "Black Panther":    ["dive_flank", "burst_pick"],
+    "Black Cat":        ["dive_flank", "burst_pick"],
+    "Daredevil":        ["dive_flank", "burst_pick"],
+    "Wolverine":        ["dive_flank"],
+    "Moon Knight":      ["range_poke", "burst_pick"],
+    "Squirrel Girl":    ["range_poke", "zone_wall"],
+    "Iron Man":         ["range_poke"],
+    "Storm":            ["range_poke", "dive_flank"],
+    "Elsa":             ["range_poke", "burst_pick"],
+    "Jean Grey":        ["range_poke", "burst_pick"],
+    "Namor":            ["range_poke", "anti_dive_peel"],
+    "Gambit":           ["burst_pick", "anti_heal"],
+    "Blade":            ["dive_flank", "anti_heal"]
+  },
+
+  "playstyle_modifiers": {
+    "comment": "Detect your comp's archetype from the function distribution of teammate picks, then re-weight gap priorities. Playstyle can also be inferred per-teammate from their public most-played heroes.",
+    "dive": {
+      "trigger": ">=3 heroes with dive_flank",
+      "raise": ["burst_pick", "ult_denial_defensive"],
+      "lower": ["range_poke"],
+      "note": "Dive needs follow-up burst and a frontline that enables it; static poke supports clash with it."
+    },
+    "brawl": {
+      "trigger": ">=2 frontline_space AND >=2 sustain_healing AND <2 dive_flank",
+      "raise": ["anti_heal", "zone_wall", "anti_dive_peel"],
+      "note": "Brawl mirrors are won with anti-heal + zone control; vulnerable if backline unprotected."
+    },
+    "poke": {
+      "trigger": ">=3 range_poke",
+      "raise": ["anti_dive_peel", "anti_flyer_grounding"],
+      "note": "Poke comps are dive-bait; they need peel and grounding or they get collapsed."
+    }
+  },
+
+  "gap_rules": {
+    "critical_gap": {
+      "rule": "function with 0 providers whose ideal_providers >= 1",
+      "escalate_if": "anti_dive_peel == 0 AND backline_squishies >= 2  ->  flag CRITICAL",
+      "example": "Team has no anti-dive and two immobile supports -> they will get dove and die."
+    },
+    "redundancy": {
+      "rule": "providers(function) > ideal_providers + 1 while some other ideal function == 0",
+      "action": "suggest rebalancing one redundant pick toward the empty function."
+    },
+    "clash": {
+      "rule": "incompatible mix",
+      "examples": [
+        "immobile poke support (e.g. Mantis) inside a >=3 dive comp",
+        "two slow brawl tanks in a comp built around flank pressure"
+      ],
+      "action": "flag the clash; suggest the pick that resolves it from the user's pool."
+    }
+  },
+
+  "recommendation_logic": {
+    "steps": [
+      "1. Tag each teammate's live character_name with its functions; aggregate coverage counts.",
+      "2. Detect archetype via playstyle_modifiers; apply raise/lower weights to gap priorities.",
+      "3. (optional) Cross-reference counter_kb: raise the weight of any gap the ENEMY comp punishes.",
+      "4. Compute prioritized gap list (critical first, then weighted ideal shortfalls).",
+      "5. Intersect needed functions with the user's comfort pool (heroes they actually play).",
+      "6. Pick the user-pool hero covering the most top-priority gap weight with one change (set cover; prefer a single pick that fills 2+ gaps).",
+      "7. Output a PICK (draft phase) or SWAP (mid-match) suggestion with the gap it closes. NEVER a ban."
+    ],
+    "output_example": {
+      "comp_read": "3 dive heroes, 0 anti-flyer, 1 sustain",
+      "archetype": "dive",
+      "top_gaps": ["sustain_healing (1 short)", "anti_flyer_grounding (0)"],
+      "suggestion": "From your pool: pick Luna — adds the 2nd healer AND a defensive ult the dive comp wants. If you'd rather hold DPS, Punisher covers the missing grounding.",
+      "never": "Do not output 'ban X'."
+    }
+  }
+}
