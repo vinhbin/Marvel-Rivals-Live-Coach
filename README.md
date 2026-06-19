@@ -12,7 +12,9 @@ the value is decision support, not data display.
 
 ## Status
 
-Early build. Design + planning complete; engine in progress.
+Early build, engine-side complete. The constrained-objective engine (Pick/Swap/Hold), the
+post-game coach, and the platform-neutral GEP ingestion layer are built + tested (`npm test`).
+Live Overwolf wiring is pending a real-match GEP spike + developer whitelist (see `PLAN.md`).
 
 - `CLAUDE.md` — the constitution (non-negotiable compliance guardrails + stack).
 - `docs/design.md` — full system design.
@@ -23,5 +25,18 @@ Early build. Design + planning complete; engine in progress.
 
 ## Stack
 
-TypeScript end-to-end · Overwolf native app · React overlay · plain TS set-cover engine over the
+TypeScript end-to-end · Overwolf app (native vs ow-electron still open) · React overlay (later) ·
+plain TS constrained-objective engine (exhaustive search, not greedy set-cover — D-009) over the
 `data/` JSONs · `zod` validation · Vite build. No backend for the personal build.
+
+## Try it without the game (manual CLI)
+
+The engine + post-game coach run locally with no Overwolf — type a roster, get advice:
+
+```
+npm run coach
+```
+
+Enter the enemy comp, your team, and your comfort pool (comma-separated hero names); it prints the
+recommended pick/swap/hold and the full post-game review (matchup table, alternatives, pool gaps).
+Useful for testing advice quality in real drafts (alt-tab + type what you see) before live wiring.

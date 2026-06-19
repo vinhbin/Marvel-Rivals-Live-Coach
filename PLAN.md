@@ -340,7 +340,7 @@ Every cut is logged in `docs/decision-log.md`. No silent removal.
 3. [x] Engine output type cannot represent a ban; grep confirms no ban field is serialized (D-006). ✅ No `Ban` variant in the union; a runtime invariant asserts no `ban`/`"kind":"ban"` is serialized over all fixtures + fuzz; engine-source grep is clean.
 4. [x] Engine consumes ONLY the whitelisted GEP fields (Shared Contracts) — no enemy dmg/healing/ult_charge anywhere. ✅ Engine keys off canonical hero keys + static KB tiers only; grep confirms no `ult_charge`/enemy-stat reference. (Re-confirm at the GEP spike when live fields are wired — D-007.)
 5. [x] Graceful `Hold` on unknown/masked/partial rosters — no crash, no silent under-cover. ✅ Phase 1.4; verified by the never-throws fuzz invariant.
-6. [ ] Compliance one-liner visible in README: "GEP-only, no injection, no confidential data." (README not written yet.)
+6. [x] Compliance one-liner visible in README: "GEP-only, no injection, no confidential data." ✅ README.md line 8 — present + extended (no memory read / injection / OCR / enemy stats / ult prediction / ban). **All 6 pre-deliver items now pass.**
 
 ---
 
