@@ -22,7 +22,7 @@
   },
 
   "hero_functions": {
-    "comment": "Seed set spanning every function. Extend to full roster; verify tags via the LLM council. Each hero lists the functions it MEANINGFULLY provides (not every theoretical use).",
+    "comment": "Full roster (Phase 0, A4 parity with counter_kb.heroes). Each hero lists the functions it MEANINGFULLY provides (not every theoretical use). EXCEPTION: the Deadpool role-split keys (Deadpool_Tank/DPS/Strat) are intentionally absent — GEP emits one 'Deadpool' name (A3); they are allow-listed in the validator until role disambiguation is resolved in the GEP spike.",
     "Thing":            ["frontline_space", "anti_dive_peel"],
     "Peni Parker":      ["anti_dive_peel", "zone_wall", "frontline_space"],
     "Magneto":          ["frontline_space", "range_poke", "ult_denial_defensive"],
@@ -61,7 +61,17 @@
     "Jean Grey":        ["range_poke", "burst_pick"],
     "Namor":            ["range_poke", "anti_dive_peel"],
     "Gambit":           ["burst_pick", "anti_heal"],
-    "Blade":            ["dive_flank", "anti_heal"]
+    "Blade":            ["dive_flank", "anti_heal"],
+    "Emma Frost":       ["frontline_space", "anti_dive_peel"],
+    "Angela":           ["dive_flank", "burst_pick"],
+    "Black Widow":      ["range_poke", "burst_pick"],
+    "Human Torch":      ["dive_flank", "zone_wall"],
+    "Iron Fist":        ["dive_flank"],
+    "Magik":            ["dive_flank", "burst_pick"],
+    "Mr Fantastic":     ["dive_flank"],
+    "Scarlet Witch":    ["dive_flank", "burst_pick"],
+    "Jeff":             ["sustain_healing", "ult_denial_defensive"],
+    "Ultron":           ["sustain_healing", "range_poke"]
   },
 
   "playstyle_modifiers": {

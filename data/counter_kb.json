@@ -3,80 +3,1568 @@
     "source": "Coaching VOD counter guide (qualitative, single-expert opinion)",
     "season_context": "~S7.5-S8 (White Fox, Phoenix/Jean, Gambit-dominant meta)",
     "shelf_life": "Re-validate every season; heroes, team-ups, and matchups shift. Do NOT treat as evergreen.",
-    "role_in_engine": "Supplies ONLY the counterability + counter-graph inputs. Meta strength, pick/ban/win rates, enemy pool concentration, and per-hero performance deltas must come from the stat API (rivalsmeta / marvelrivalsapi), not this file.",
-    "ban_logic": "counterability LOW  -> ban_value HIGH (hard to answer via pick).  counterability HIGH -> ban_value LOW (just counter-pick it).  counterability CONDITIONAL -> depends on whether OUR comp can deliver the required mechanism; resolve at runtime against our comfort pool.",
-    "ban_value_numeric": { "low": 0.85, "medium": 0.5, "high": 0.2, "conditional": 0.5 }
+    "role_in_engine": "Supplies ONLY the counterability + counter-graph inputs. Meta strength, pick/win rates, enemy pool concentration, and per-hero performance deltas must come from the stat API (rivalsmeta / marvelrivalsapi), not this file.",
+    "registry_ref": "data/registry.json is the source of truth for hero keys + mechanism vocab. All mechanism tokens here are canonical (24-token vocab). Hero names resolved (Gan->Jean Grey). See D-002.",
+    "phase0": "Mechanisms canonicalized (A1), counter names resolved (A2), provides_mechanisms added (0.7), ban machinery quarantined to _archival_do_not_use (D-004/0.5)."
   },
-
   "mechanism_vocab": [
-    "grounding", "anti_dive", "hard_cc", "burst_range", "mobility_dive",
-    "percent_damage", "wall_break", "range_poke", "hitscan", "peel",
-    "displacement", "anti_heal", "cc_immune_body"
+    "anti_dive",
+    "anti_heal",
+    "brawl",
+    "burst_range",
+    "cc_immune_body",
+    "clone_pressure",
+    "contest_vertical",
+    "cooldown_force",
+    "displacement",
+    "flat_damage",
+    "grounding",
+    "hard_cc",
+    "hitscan",
+    "kill_through_ult",
+    "mark",
+    "mobility_dive",
+    "peel",
+    "prolonged_hitbox",
+    "range_poke",
+    "support_deny",
+    "survive_onslaught",
+    "ult_turnaround",
+    "wall_break",
+    "zone_denial"
   ],
-
   "answer_heroes": {
     "comment": "If OUR team is comfortable on one of these, subtract the heroes it answers from the ban candidate list BEFORE scoring. This is the highest-leverage rule in the engine.",
-    "Thing": { "answers": ["Black Panther", "Black Cat", "Daredevil", "Magik", "Spider-Man", "Venom", "Wolverine", "Captain America"], "via": ["anti_dive", "hard_cc", "cc_immune_body"] },
-    "Peni Parker": { "answers": ["Captain America", "Hulk", "Thor", "Magik", "Black Panther", "Black Cat", "Iron Fist"], "via": ["anti_dive", "zone_denial"], "note": "Map/defense-setup dependent; weak when forced to take space." },
-    "Magneto": { "answers": ["Iron Man", "Punisher", "Moon Knight", "Hawkeye", "Star-Lord", "Bucky"], "via": ["range_poke", "ult_turnaround"], "note": "Hard counter to ult-reliant heroes via forced-fire ult." },
-    "White Fox": { "answers": ["Captain America", "Hulk", "Thor", "Magik", "Iron Fist", "Spider-Man", "Black Cat", "Deadpool_DPS"], "via": ["peel", "mobility_dive"], "note": "Support answer to dive; weak vs hitscan-from-range in isolation." },
-    "Invisible Woman": { "answers": ["Hulk", "Thor", "Captain America", "Wolverine", "Venom", "Spider-Man", "Black Cat"], "via": ["displacement", "peel"], "note": "Push/pull peel; victim to Deadpool_Tank pistol and to range-poke." }
+    "Thing": {
+      "answers": [
+        "Black Panther",
+        "Black Cat",
+        "Daredevil",
+        "Magik",
+        "Spider-Man",
+        "Venom",
+        "Wolverine",
+        "Captain America"
+      ],
+      "via": [
+        "anti_dive",
+        "hard_cc",
+        "cc_immune_body"
+      ]
+    },
+    "Peni Parker": {
+      "answers": [
+        "Captain America",
+        "Hulk",
+        "Thor",
+        "Magik",
+        "Black Panther",
+        "Black Cat",
+        "Iron Fist"
+      ],
+      "via": [
+        "anti_dive",
+        "zone_denial"
+      ],
+      "note": "Map/defense-setup dependent; weak when forced to take space."
+    },
+    "Magneto": {
+      "answers": [
+        "Iron Man",
+        "Punisher",
+        "Moon Knight",
+        "Hawkeye",
+        "Star-Lord",
+        "Bucky"
+      ],
+      "via": [
+        "range_poke",
+        "ult_turnaround"
+      ],
+      "note": "Hard counter to ult-reliant heroes via forced-fire ult."
+    },
+    "White Fox": {
+      "answers": [
+        "Captain America",
+        "Hulk",
+        "Thor",
+        "Magik",
+        "Iron Fist",
+        "Spider-Man",
+        "Black Cat",
+        "Deadpool_DPS"
+      ],
+      "via": [
+        "peel",
+        "mobility_dive"
+      ],
+      "note": "Support answer to dive; weak vs hitscan-from-range in isolation."
+    },
+    "Invisible Woman": {
+      "answers": [
+        "Hulk",
+        "Thor",
+        "Captain America",
+        "Wolverine",
+        "Venom",
+        "Spider-Man",
+        "Black Cat"
+      ],
+      "via": [
+        "displacement",
+        "peel"
+      ],
+      "note": "Push/pull peel; victim to Deadpool_Tank pistol and to range-poke."
+    }
   },
-
   "heroes": {
-    "Angela":          { "role": "Duelist", "counterability": "medium", "notes": "Flyer; punished by grounding+burst and by CC-immune tanks.", "countered_by": [ {"hero":"Thing","mechanism":"cc_immune_body"}, {"hero":"Devil Dinosaur","mechanism":"grounding"}, {"hero":"Thor","mechanism":"grounding"}, {"hero":"Bucky","mechanism":"grounding"}, {"hero":"Jeff","mechanism":"range_poke"}, {"hero":"Invisible Woman","mechanism":"displacement"} ] },
-    "Captain America": { "role": "Vanguard", "counterability": "medium", "notes": "Stall/space tank; many anti-dive answers, any non-squishy DPS trades.", "countered_by": [ {"hero":"Thing","mechanism":"anti_dive"}, {"hero":"Bucky","mechanism":"hard_cc"}, {"hero":"Invisible Woman","mechanism":"displacement"}, {"hero":"Hulk","mechanism":"peel"}, {"hero":"White Fox","mechanism":"peel"}, {"hero":"Peni Parker","mechanism":"zone_denial"} ] },
-    "Deadpool_Tank":   { "role": "Vanguard", "counterability": "high", "notes": "Jack-of-all-master-of-none; lose to brawl, ignorable by full dive.", "countered_by": [ {"hero":"Devil Dinosaur","mechanism":"brawl"}, {"hero":"Groot","mechanism":"brawl"}, {"hero":"Black Cat","mechanism":"mobility_dive"}, {"hero":"Daredevil","mechanism":"mobility_dive"}, {"hero":"Venom","mechanism":"mobility_dive"} ] },
-    "Devil Dinosaur":  { "role": "Vanguard", "counterability": "low", "notes": "Strongest brawler; beat via hard-poke-from-range OR full dive that ignores him. Weak to anti-heal.", "countered_by": [ {"hero":"Magneto","mechanism":"range_poke"}, {"hero":"Squirrel Girl","mechanism":"burst_range"}, {"hero":"Moon Knight","mechanism":"burst_range"}, {"hero":"Punisher","mechanism":"burst_range"}, {"hero":"Storm","mechanism":"burst_range"}, {"hero":"Gambit","mechanism":"anti_heal"}, {"hero":"Blade","mechanism":"anti_heal"} ] },
-    "Doctor Strange":  { "role": "Vanguard", "counterability": "low", "notes": "Lukewarm vs field, few weaknesses; only CC stacking truly frustrates him.", "countered_by": [ {"hero":"Wolverine","mechanism":"hard_cc"}, {"hero":"Thor","mechanism":"displacement"}, {"hero":"Emma Frost","mechanism":"hard_cc"}, {"hero":"Invisible Woman","mechanism":"displacement"}, {"hero":"Rogue","mechanism":"burst_range"} ] },
-    "Emma Frost":      { "role": "Vanguard", "counterability": "medium", "notes": "Squishy when shield down; force diamond-form defensively; weak to mobility off-angles.", "countered_by": [ {"hero":"Punisher","mechanism":"burst_range"}, {"hero":"Star-Lord","mechanism":"mobility_dive"}, {"hero":"Psylocke","mechanism":"mobility_dive"}, {"hero":"Venom","mechanism":"mobility_dive"} ] },
-    "Groot":           { "role": "Vanguard", "counterability": "medium", "notes": "Map-dependent oppressive; beat by wall-break stacking OR heroes that go over walls.", "countered_by": [ {"hero":"Bucky","mechanism":"wall_break"}, {"hero":"Punisher","mechanism":"wall_break"}, {"hero":"Star-Lord","mechanism":"wall_break"}, {"hero":"Doctor Strange","mechanism":"mobility_dive"}, {"hero":"Wolverine","mechanism":"hard_cc"} ] },
-    "Hulk":            { "role": "Vanguard", "counterability": "medium", "notes": "Squishy without bubble; conserve CC for post-bubble window. Peni hard-counter.", "countered_by": [ {"hero":"Peni Parker","mechanism":"zone_denial"}, {"hero":"Punisher","mechanism":"burst_range"}, {"hero":"Bucky","mechanism":"hard_cc"}, {"hero":"Invisible Woman","mechanism":"displacement"}, {"hero":"White Fox","mechanism":"peel"} ] },
-    "Magneto":         { "role": "Vanguard", "counterability": "medium", "notes": "Good vs poke/field but bullied hard by displacement; struggles vs multi-dive. Himself an answer hero.", "countered_by": [ {"hero":"Thor","mechanism":"displacement"}, {"hero":"Angela","mechanism":"displacement"}, {"hero":"Venom","mechanism":"mobility_dive"}, {"hero":"Spider-Man","mechanism":"mobility_dive"}, {"hero":"Daredevil","mechanism":"mobility_dive"} ] },
-    "Peni Parker":     { "role": "Vanguard", "counterability": "medium", "notes": "Polarizing; ANSWER hero vs melee/dive. Beat by range/spam/spread damage; clear nests as tank.", "countered_by": [ {"hero":"Moon Knight","mechanism":"range_poke"}, {"hero":"Squirrel Girl","mechanism":"range_poke"}, {"hero":"Magneto","mechanism":"range_poke"}, {"hero":"Deadpool_Tank","mechanism":"range_poke"} ] },
-    "Rogue":           { "role": "Vanguard", "counterability": "medium", "notes": "High mobility/survivability; answer with range-from-safety + CC during float/slam.", "countered_by": [ {"hero":"Jean Grey","mechanism":"burst_range"}, {"hero":"Bucky","mechanism":"burst_range"}, {"hero":"Star-Lord","mechanism":"mobility_dive"}, {"hero":"Psylocke","mechanism":"mobility_dive"}, {"hero":"Luna","mechanism":"hard_cc"} ] },
-    "Thing":           { "role": "Vanguard", "counterability": "medium", "notes": "Polarizing ANSWER hero vs all dive/melee. Beat by burst/poke-from-range he can't trade into.", "countered_by": [ {"hero":"Punisher","mechanism":"burst_range"}, {"hero":"Squirrel Girl","mechanism":"burst_range"}, {"hero":"Bucky","mechanism":"burst_range"}, {"hero":"Emma Frost","mechanism":"range_poke"}, {"hero":"Groot","mechanism":"wall_break"} ] },
-    "Thor":            { "role": "Vanguard", "counterability": "medium", "notes": "Jack-of-trades but squishy; dies to stacked CC + burst. Invis/White Fox strong.", "countered_by": [ {"hero":"Invisible Woman","mechanism":"displacement"}, {"hero":"White Fox","mechanism":"peel"}, {"hero":"Emma Frost","mechanism":"hard_cc"}, {"hero":"Devil Dinosaur","mechanism":"cc_immune_body"} ] },
-    "Venom":           { "role": "Vanguard", "counterability": "medium", "notes": "Feels unkillable if you all-shoot him; real answer is interrupting grapple-out window + marking pre-dive. Loki is free food FOR Venom.", "countered_by": [ {"hero":"Invisible Woman","mechanism":"displacement"}, {"hero":"Jeff","mechanism":"displacement"}, {"hero":"Jean Grey","mechanism":"hard_cc"}, {"hero":"Wolverine","mechanism":"hard_cc"}, {"hero":"Bucky","mechanism":"hard_cc"}, {"hero":"Angela","mechanism":"mark"} ] },
-
-    "Black Cat":       { "role": "Duelist", "counterability": "medium", "notes": "Momentum menace; needs burst+mobility to answer. Thing denies hard. Protect the focused teammate.", "countered_by": [ {"hero":"Thing","mechanism":"anti_dive"}, {"hero":"Daredevil","mechanism":"mobility_dive"}, {"hero":"Gan","mechanism":"burst_range"}, {"hero":"Invisible Woman","mechanism":"peel"}, {"hero":"White Fox","mechanism":"peel"} ] },
-    "Black Panther":   { "role": "Duelist", "counterability": "high", "notes": "Feast-or-famine; Thing shuts him out, pre-dive pressure widens his uptime problem. LOW ban value -- counter instead.", "countered_by": [ {"hero":"Thing","mechanism":"anti_dive"}, {"hero":"Thor","mechanism":"mobility_dive"}, {"hero":"Hulk","mechanism":"peel"}, {"hero":"Invisible Woman","mechanism":"peel"} ], "ban_note": "Jeff is free food for BP -- avoid Jeff into him." },
-    "Black Widow":     { "role": "Duelist", "counterability": "high", "notes": "Deadly with aim but glaring weaknesses; a SECOND diver breaks her; close gap inside kick range. LOW ban value.", "countered_by": [ {"hero":"Star-Lord","mechanism":"mobility_dive"}, {"hero":"Psylocke","mechanism":"mobility_dive"}, {"hero":"Venom","mechanism":"mobility_dive"}, {"hero":"Thor","mechanism":"mobility_dive"} ] },
-    "Blade":           { "role": "Duelist", "counterability": "high", "notes": "Thrives on sustain vs low-burst comps; add burst/CC and he folds. Loses pound-for-pound. LOW ban value.", "countered_by": [ {"hero":"Jean Grey","mechanism":"burst_range"}, {"hero":"Bucky","mechanism":"burst_range"}, {"hero":"Luna","mechanism":"hard_cc"} ] },
-    "Daredevil":       { "role": "Duelist", "counterability": "medium", "notes": "Menace; bait the reflect, mark pre-dive, stay calm. Conditional on having mark + composure.", "countered_by": [ {"hero":"Hulk","mechanism":"mark"}, {"hero":"Thor","mechanism":"mark"}, {"hero":"Angela","mechanism":"mark"}, {"hero":"Luna","mechanism":"hard_cc"} ] },
-    "Deadpool_DPS":    { "role": "Duelist", "counterability": "medium", "notes": "Weak pre-levels (abuse early); scales to menace. Standard anti-dive answers; respect overtime ult.", "countered_by": [ {"hero":"Thing","mechanism":"anti_dive"}, {"hero":"Invisible Woman","mechanism":"peel"}, {"hero":"White Fox","mechanism":"peel"} ] },
-    "Elsa":            { "role": "Duelist", "counterability": "medium", "notes": "No glaring bad matchups; value is the ult -- deny ult clustering. Divers can pressure her.", "countered_by": [ {"hero":"Daredevil","mechanism":"mobility_dive"}, {"hero":"Black Cat","mechanism":"mobility_dive"}, {"hero":"Thor","mechanism":"mobility_dive"} ] },
-    "Hawkeye":         { "role": "Duelist", "counterability": "high", "notes": "Black-Widow weaknesses but worse; folds completely to mobility/dive/off-angles. LOW ban value.", "countered_by": [ {"hero":"Star-Lord","mechanism":"mobility_dive"}, {"hero":"Psylocke","mechanism":"mobility_dive"}, {"hero":"Spider-Man","mechanism":"mobility_dive"}, {"hero":"Mantis","mechanism":"range_poke"} ] },
-    "Hela":            { "role": "Duelist", "counterability": "medium", "notes": "Lethal with aim vs DPS; weaker vs mobile tanks. Deny sightlines, close fast.", "countered_by": [ {"hero":"Angela","mechanism":"mark"}, {"hero":"Thor","mechanism":"mobility_dive"}, {"hero":"Rogue","mechanism":"mobility_dive"}, {"hero":"Doctor Strange","mechanism":"contest_vertical"} ] },
-    "Human Torch":     { "role": "Duelist", "counterability": "high", "notes": "Permaflyer; grounding + hitscan answer cleanly. Luna/Adam dominate. LOW-MED ban value.", "countered_by": [ {"hero":"Bucky","mechanism":"grounding"}, {"hero":"Hulk","mechanism":"grounding"}, {"hero":"Thor","mechanism":"grounding"}, {"hero":"Devil Dinosaur","mechanism":"grounding"}, {"hero":"Luna","mechanism":"hitscan"}, {"hero":"Adam","mechanism":"range_poke"} ] },
-    "Iron Fist":       { "role": "Duelist", "counterability": "medium", "notes": "Tank-buster; discipline vs block/deflect is everything. White Fox out-brawls him. Conditional on disciplined burst.", "countered_by": [ {"hero":"White Fox","mechanism":"peel"}, {"hero":"Thor","mechanism":"brawl"}, {"hero":"Bucky","mechanism":"burst_range"} ] },
-    "Iron Man":        { "role": "Duelist", "counterability": "high", "notes": "Less mobile than Torch; Magneto hard-counters (180 cancels his ult value). LOW ban value.", "countered_by": [ {"hero":"Magneto","mechanism":"ult_turnaround"}, {"hero":"Star-Lord","mechanism":"hitscan"}, {"hero":"Bucky","mechanism":"hitscan"}, {"hero":"Spider-Man","mechanism":"mobility_dive"}, {"hero":"Angela","mechanism":"mark"} ] },
-    "Magik":           { "role": "Duelist", "counterability": "high", "notes": "Oppressive in close corridors; melee-shutdown tanks + any CC + range answer her. LOW-MED ban value.", "countered_by": [ {"hero":"Peni Parker","mechanism":"zone_denial"}, {"hero":"Thing","mechanism":"anti_dive"}, {"hero":"Thor","mechanism":"mark"}, {"hero":"White Fox","mechanism":"peel"}, {"hero":"Luna","mechanism":"hard_cc"} ] },
-    "Mr Fantastic":    { "role": "Duelist", "counterability": "medium", "notes": "Cooldown-read dependent; killable in big-body/ult; poke-from-range beats him. Force out the Dorito.", "countered_by": [ {"hero":"Luna","mechanism":"hard_cc"}, {"hero":"White Fox","mechanism":"range_poke"}, {"hero":"Punisher","mechanism":"range_poke"} ] },
-    "Moon Knight":     { "role": "Duelist", "counterability": "conditional", "notes": "MUST-ANSWER threat; if your comp can hunt him (mobility tank/dive DPS) ban value LOW, else HIGH. Don't turtle.", "countered_by": [ {"hero":"Psylocke","mechanism":"mobility_dive"}, {"hero":"Angela","mechanism":"mark"}, {"hero":"Hulk","mechanism":"mark"}, {"hero":"Thor","mechanism":"mark"} ] },
-    "Namor":           { "role": "Duelist", "counterability": "low", "notes": "Few bad matchups; good vs field. Kill the squids constantly. HIGH ban value.", "countered_by": [ {"hero":"Groot","mechanism":"go_over"}, {"hero":"Doctor Strange","mechanism":"contest_vertical"}, {"hero":"Thor","mechanism":"mobility_dive"}, {"hero":"Magneto","mechanism":"range_poke"} ] },
-    "Jean Grey":       { "role": "Duelist", "counterability": "low", "notes": "'No counters'; good vs nearly the whole field. Beat only by setting your own terms + range-advantage heroes. HIGH ban value.", "countered_by": [ {"hero":"Daredevil","mechanism":"mobility_dive"}, {"hero":"Black Cat","mechanism":"mobility_dive"}, {"hero":"Hawkeye","mechanism":"range_advantage"}, {"hero":"Angela","mechanism":"mark"} ], "aka": ["Phoenix", "Gan", "Gene"] },
-    "Psylocke":        { "role": "Duelist", "counterability": "medium", "notes": "Scales with skill, sets terms; burst-from-range + divers + mirror-mark answer. Loki is the support counter.", "countered_by": [ {"hero":"Hela","mechanism":"burst_range"}, {"hero":"Jean Grey","mechanism":"burst_range"}, {"hero":"Daredevil","mechanism":"mobility_dive"}, {"hero":"Loki","mechanism":"support_deny"}, {"hero":"White Fox","mechanism":"hard_cc"} ], "aka": ["Psylock", "Sai", "Sigh"] },
-    "Scarlet Witch":   { "role": "Duelist", "counterability": "high", "notes": "TTK problem; any fast-killing hero + CC punishes. Skill-floor counter (needs your aim). LOW ban value except low-skill lobbies.", "countered_by": [ {"hero":"Bucky","mechanism":"burst_range"}, {"hero":"Hela","mechanism":"burst_range"}, {"hero":"Luna","mechanism":"hard_cc"} ] },
-    "Spider-Man":      { "role": "Duelist", "counterability": "conditional", "notes": "Fragile, telegraphed; punish hardest while he's mid-combo on someone else. Conditional on mechanics/sustain. Save anti-ult CC.", "countered_by": [ {"hero":"Mr Fantastic","mechanism":"survive_onslaught"}, {"hero":"Elsa","mechanism":"survive_onslaught"}, {"hero":"Thing","mechanism":"cc_immune_body"}, {"hero":"Devil Dinosaur","mechanism":"cc_immune_body"} ] },
-    "Squirrel Girl":   { "role": "Duelist", "counterability": "conditional", "notes": "MUST-ANSWER like Moon Knight; 'too easy to kill' IF you hunt with mobility/range-tanks. Shoot the ult squirrels.", "countered_by": [ {"hero":"Psylocke","mechanism":"mobility_dive"}, {"hero":"Magneto","mechanism":"range_poke"}, {"hero":"Deadpool_Tank","mechanism":"range_poke"}, {"hero":"Spider-Man","mechanism":"mobility_dive"} ] },
-    "Star-Lord":       { "role": "Duelist", "counterability": "medium", "notes": "No overwhelming weakness; skill-based. Don't over-extend engagements (he wins long fights). Magneto folds his ult.", "countered_by": [ {"hero":"Emma Frost","mechanism":"prolonged_hitbox"}, {"hero":"Magneto","mechanism":"ult_turnaround"}, {"hero":"Jean Grey","mechanism":"burst_range"}, {"hero":"Hela","mechanism":"burst_range"} ] },
-    "Storm":           { "role": "Duelist", "counterability": "high", "notes": "Low/short flight, clumps with team; grounding + hitscan answer. Punisher ult counters her ult. LOW ban value.", "countered_by": [ {"hero":"Punisher","mechanism":"ult_counter"}, {"hero":"Thing","mechanism":"grounding"}, {"hero":"Thor","mechanism":"grounding"}, {"hero":"Star-Lord","mechanism":"hitscan"} ] },
-    "Punisher":        { "role": "Duelist", "counterability": "medium", "notes": "Susceptible to multi-angle dive; Magneto beats him straight up; needs protection. Ban value usually from META not counterability.", "countered_by": [ {"hero":"Magneto","mechanism":"range_poke"}, {"hero":"Star-Lord","mechanism":"mobility_dive"}, {"hero":"Daredevil","mechanism":"mobility_dive"}, {"hero":"Black Cat","mechanism":"mobility_dive"} ] },
-    "Bucky":           { "role": "Duelist", "counterability": "medium", "notes": "Good vs low-tier picks, bad vs long-range + all-in dive; zoned by frontline. Deny the ult reset. Don't get hooked.", "countered_by": [ {"hero":"Jean Grey","mechanism":"range_advantage"}, {"hero":"Namor","mechanism":"range_advantage"}, {"hero":"Magneto","mechanism":"zone_denial"}, {"hero":"Emma Frost","mechanism":"zone_denial"} ], "aka": ["Winter Soldier"] },
-    "Wolverine":       { "role": "Duelist", "counterability": "conditional", "notes": "Devastates non-CC-immune tanks; answer = CC-immune bodies + burst to shoot him + Invis pull. Break his overshield. Conditional on having the answer.", "countered_by": [ {"hero":"Devil Dinosaur","mechanism":"cc_immune_body"}, {"hero":"Thing","mechanism":"cc_immune_body"}, {"hero":"Invisible Woman","mechanism":"displacement"}, {"hero":"Luna","mechanism":"peel"} ] },
-
-    "Adam":            { "role": "Strategist", "counterability": "medium", "notes": "Strong if allowed free off-angles; hunt him, force soul bond early, deny free ults.", "countered_by": [ {"hero":"Psylocke","mechanism":"mobility_dive"}, {"hero":"Star-Lord","mechanism":"range_poke"}, {"hero":"Thor","mechanism":"mobility_dive"} ] },
-    "Cloak and Dagger":{ "role": "Strategist", "counterability": "high", "notes": "'Straight up killable' -- bait/force the bubble, re-engage, kill. Transcript explicitly says DON'T ban, just kill. LOW ban value.", "countered_by": [ {"hero":"Venom","mechanism":"mobility_dive"}, {"hero":"Daredevil","mechanism":"mobility_dive"}, {"hero":"Thor","mechanism":"displacement"}, {"hero":"Magneto","mechanism":"burst_range"}, {"hero":"Hulk","mechanism":"mobility_dive"} ] },
-    "Deadpool_Strat":  { "role": "Strategist", "counterability": "medium", "notes": "Strong in all-in brawl/triple-support; respect ult, give space rather than mirror. LOW-MED ban value.", "countered_by": [ {"hero":"Magneto","mechanism":"ult_zone"}, {"hero":"Groot","mechanism":"space_denial"} ] },
-    "Gambit":          { "role": "Strategist", "counterability": "low", "notes": "Transcript: 'best way to deal is banning him.' Good vs field, killable but strong, huge ult, cleanse. HIGHEST ban value -- and matches API top ban rate.", "countered_by": [ {"hero":"Magneto","mechanism":"ult_turnaround"}, {"hero":"Doctor Strange","mechanism":"ult_punish"}, {"hero":"Psylocke","mechanism":"range_poke"}, {"hero":"Thing","mechanism":"hard_cc"} ] },
-    "Invisible Woman": { "role": "Strategist", "counterability": "medium", "notes": "All-round vs dive; worn down by range (Punisher) and ignored by Magneto. Needs coordinated 2-person dive to punish. No true bad matchups. Also an answer hero.", "countered_by": [ {"hero":"Punisher","mechanism":"range_poke"}, {"hero":"Magneto","mechanism":"range_poke"}, {"hero":"Moon Knight","mechanism":"range_poke"} ] },
-    "Jeff":            { "role": "Strategist", "counterability": "conditional", "notes": "Menace vs hard-to-interact heroes; flat-damage DPS kill him underwater. Need an anti-ult plan (mobility / CC-immune / sandbag ult). Conditional.", "countered_by": [ {"hero":"Daredevil","mechanism":"flat_damage"}, {"hero":"Black Cat","mechanism":"flat_damage"}, {"hero":"Black Panther","mechanism":"flat_damage"}, {"hero":"Iron Fist","mechanism":"flat_damage"} ] },
-    "Loki":            { "role": "Strategist", "counterability": "medium", "notes": "Battle of cooldowns; pressure clones/teleport/totems, fight only when forced out. Venom/Thor extra value.", "countered_by": [ {"hero":"Venom","mechanism":"cooldown_force"}, {"hero":"Thor","mechanism":"mobility_dive"}, {"hero":"Moon Knight","mechanism":"range_poke"}, {"hero":"Luna","mechanism":"clone_pressure"} ] },
-    "Luna":            { "role": "Strategist", "counterability": "medium", "notes": "Very strong; tanks counter better than DPS; full dive comp is her weakness. Ban value often from META.", "countered_by": [ {"hero":"Venom","mechanism":"mobility_dive"}, {"hero":"Thor","mechanism":"mobility_dive"}, {"hero":"Doctor Strange","mechanism":"contest"}, {"hero":"Black Cat","mechanism":"mobility_dive"} ] },
-    "Mantis":          { "role": "Strategist", "counterability": "medium", "notes": "Triple-support enabler; punish overaggression, kill-through-ult combos (Groot+combo), starve the comp's lone DPS. Beat the system, not the hero.", "countered_by": [ {"hero":"Groot","mechanism":"kill_through_ult"}, {"hero":"Venom","mechanism":"mobility_dive"} ] },
-    "Rocket":          { "role": "Strategist", "counterability": "medium", "notes": "No CC, weak damage; relentless chase + hitscan beats him; pre-break res beacons. Counter his ult by walking on it.", "countered_by": [ {"hero":"Jean Grey","mechanism":"hitscan"}, {"hero":"Angela","mechanism":"chase"}, {"hero":"Psylocke","mechanism":"mobility_dive"}, {"hero":"Star-Lord","mechanism":"range_poke"} ] },
-    "Ultron":          { "role": "Strategist", "counterability": "medium", "notes": "Triple-support skybox; deny high ground with hitscan/burst, Magneto ult, Angela. Divers weak into him.", "countered_by": [ {"hero":"Magneto","mechanism":"ult_turnaround"}, {"hero":"Angela","mechanism":"mark"}, {"hero":"Star-Lord","mechanism":"hitscan"}, {"hero":"Hela","mechanism":"hitscan"} ] },
-    "White Fox":       { "role": "Strategist", "counterability": "medium", "notes": "Elite vs dive/brawl; weak ONLY to hitscan-from-range in isolation; with a dive comp she beats even her counters. Also an answer hero.", "countered_by": [ {"hero":"Jean Grey","mechanism":"range_poke"}, {"hero":"Punisher","mechanism":"range_poke"}, {"hero":"Moon Knight","mechanism":"range_poke"}, {"hero":"Namor","mechanism":"range_poke"}, {"hero":"Elsa","mechanism":"range_poke"} ] }
+    "Angela": {
+      "role": "Duelist",
+      "counterability": "medium",
+      "notes": "Flyer; punished by grounding+burst and by CC-immune tanks.",
+      "countered_by": [
+        {
+          "hero": "Thing",
+          "mechanism": "cc_immune_body"
+        },
+        {
+          "hero": "Devil Dinosaur",
+          "mechanism": "grounding"
+        },
+        {
+          "hero": "Thor",
+          "mechanism": "grounding"
+        },
+        {
+          "hero": "Bucky",
+          "mechanism": "grounding"
+        },
+        {
+          "hero": "Jeff",
+          "mechanism": "range_poke"
+        },
+        {
+          "hero": "Invisible Woman",
+          "mechanism": "displacement"
+        }
+      ],
+      "provides_mechanisms": [
+        "displacement",
+        "mark",
+        "mobility_dive"
+      ]
+    },
+    "Captain America": {
+      "role": "Vanguard",
+      "counterability": "medium",
+      "notes": "Stall/space tank; many anti-dive answers, any non-squishy DPS trades.",
+      "countered_by": [
+        {
+          "hero": "Thing",
+          "mechanism": "anti_dive"
+        },
+        {
+          "hero": "Bucky",
+          "mechanism": "hard_cc"
+        },
+        {
+          "hero": "Invisible Woman",
+          "mechanism": "displacement"
+        },
+        {
+          "hero": "Hulk",
+          "mechanism": "peel"
+        },
+        {
+          "hero": "White Fox",
+          "mechanism": "peel"
+        },
+        {
+          "hero": "Peni Parker",
+          "mechanism": "zone_denial"
+        }
+      ],
+      "provides_mechanisms": []
+    },
+    "Deadpool_Tank": {
+      "role": "Vanguard",
+      "counterability": "high",
+      "notes": "Jack-of-all-master-of-none; lose to brawl, ignorable by full dive.",
+      "countered_by": [
+        {
+          "hero": "Devil Dinosaur",
+          "mechanism": "brawl"
+        },
+        {
+          "hero": "Groot",
+          "mechanism": "brawl"
+        },
+        {
+          "hero": "Black Cat",
+          "mechanism": "mobility_dive"
+        },
+        {
+          "hero": "Daredevil",
+          "mechanism": "mobility_dive"
+        },
+        {
+          "hero": "Venom",
+          "mechanism": "mobility_dive"
+        }
+      ],
+      "provides_mechanisms": [
+        "range_poke"
+      ]
+    },
+    "Devil Dinosaur": {
+      "role": "Vanguard",
+      "counterability": "low",
+      "notes": "Strongest brawler; beat via hard-poke-from-range OR full dive that ignores him. Weak to anti-heal.",
+      "countered_by": [
+        {
+          "hero": "Magneto",
+          "mechanism": "range_poke"
+        },
+        {
+          "hero": "Squirrel Girl",
+          "mechanism": "burst_range"
+        },
+        {
+          "hero": "Moon Knight",
+          "mechanism": "burst_range"
+        },
+        {
+          "hero": "Punisher",
+          "mechanism": "burst_range"
+        },
+        {
+          "hero": "Storm",
+          "mechanism": "burst_range"
+        },
+        {
+          "hero": "Gambit",
+          "mechanism": "anti_heal"
+        },
+        {
+          "hero": "Blade",
+          "mechanism": "anti_heal"
+        }
+      ],
+      "provides_mechanisms": [
+        "brawl",
+        "cc_immune_body",
+        "grounding"
+      ]
+    },
+    "Doctor Strange": {
+      "role": "Vanguard",
+      "counterability": "low",
+      "notes": "Lukewarm vs field, few weaknesses; only CC stacking truly frustrates him.",
+      "countered_by": [
+        {
+          "hero": "Wolverine",
+          "mechanism": "hard_cc"
+        },
+        {
+          "hero": "Thor",
+          "mechanism": "displacement"
+        },
+        {
+          "hero": "Emma Frost",
+          "mechanism": "hard_cc"
+        },
+        {
+          "hero": "Invisible Woman",
+          "mechanism": "displacement"
+        },
+        {
+          "hero": "Rogue",
+          "mechanism": "burst_range"
+        }
+      ],
+      "provides_mechanisms": [
+        "contest_vertical",
+        "mobility_dive",
+        "ult_turnaround"
+      ]
+    },
+    "Emma Frost": {
+      "role": "Vanguard",
+      "counterability": "medium",
+      "notes": "Squishy when shield down; force diamond-form defensively; weak to mobility off-angles.",
+      "countered_by": [
+        {
+          "hero": "Punisher",
+          "mechanism": "burst_range"
+        },
+        {
+          "hero": "Star-Lord",
+          "mechanism": "mobility_dive"
+        },
+        {
+          "hero": "Psylocke",
+          "mechanism": "mobility_dive"
+        },
+        {
+          "hero": "Venom",
+          "mechanism": "mobility_dive"
+        }
+      ],
+      "provides_mechanisms": [
+        "hard_cc",
+        "prolonged_hitbox",
+        "range_poke",
+        "zone_denial"
+      ]
+    },
+    "Groot": {
+      "role": "Vanguard",
+      "counterability": "medium",
+      "notes": "Map-dependent oppressive; beat by wall-break stacking OR heroes that go over walls.",
+      "countered_by": [
+        {
+          "hero": "Bucky",
+          "mechanism": "wall_break"
+        },
+        {
+          "hero": "Punisher",
+          "mechanism": "wall_break"
+        },
+        {
+          "hero": "Star-Lord",
+          "mechanism": "wall_break"
+        },
+        {
+          "hero": "Doctor Strange",
+          "mechanism": "mobility_dive"
+        },
+        {
+          "hero": "Wolverine",
+          "mechanism": "hard_cc"
+        }
+      ],
+      "provides_mechanisms": [
+        "brawl",
+        "contest_vertical",
+        "kill_through_ult",
+        "wall_break",
+        "zone_denial"
+      ]
+    },
+    "Hulk": {
+      "role": "Vanguard",
+      "counterability": "medium",
+      "notes": "Squishy without bubble; conserve CC for post-bubble window. Peni hard-counter.",
+      "countered_by": [
+        {
+          "hero": "Peni Parker",
+          "mechanism": "zone_denial"
+        },
+        {
+          "hero": "Punisher",
+          "mechanism": "burst_range"
+        },
+        {
+          "hero": "Bucky",
+          "mechanism": "hard_cc"
+        },
+        {
+          "hero": "Invisible Woman",
+          "mechanism": "displacement"
+        },
+        {
+          "hero": "White Fox",
+          "mechanism": "peel"
+        }
+      ],
+      "provides_mechanisms": [
+        "grounding",
+        "mark",
+        "mobility_dive",
+        "peel"
+      ]
+    },
+    "Magneto": {
+      "role": "Vanguard",
+      "counterability": "medium",
+      "notes": "Good vs poke/field but bullied hard by displacement; struggles vs multi-dive. Himself an answer hero.",
+      "countered_by": [
+        {
+          "hero": "Thor",
+          "mechanism": "displacement"
+        },
+        {
+          "hero": "Angela",
+          "mechanism": "displacement"
+        },
+        {
+          "hero": "Venom",
+          "mechanism": "mobility_dive"
+        },
+        {
+          "hero": "Spider-Man",
+          "mechanism": "mobility_dive"
+        },
+        {
+          "hero": "Daredevil",
+          "mechanism": "mobility_dive"
+        }
+      ],
+      "provides_mechanisms": [
+        "burst_range",
+        "range_poke",
+        "ult_turnaround",
+        "zone_denial"
+      ]
+    },
+    "Peni Parker": {
+      "role": "Vanguard",
+      "counterability": "medium",
+      "notes": "Polarizing; ANSWER hero vs melee/dive. Beat by range/spam/spread damage; clear nests as tank.",
+      "countered_by": [
+        {
+          "hero": "Moon Knight",
+          "mechanism": "range_poke"
+        },
+        {
+          "hero": "Squirrel Girl",
+          "mechanism": "range_poke"
+        },
+        {
+          "hero": "Magneto",
+          "mechanism": "range_poke"
+        },
+        {
+          "hero": "Deadpool_Tank",
+          "mechanism": "range_poke"
+        }
+      ],
+      "provides_mechanisms": [
+        "anti_dive",
+        "zone_denial"
+      ]
+    },
+    "Rogue": {
+      "role": "Vanguard",
+      "counterability": "medium",
+      "notes": "High mobility/survivability; answer with range-from-safety + CC during float/slam.",
+      "countered_by": [
+        {
+          "hero": "Jean Grey",
+          "mechanism": "burst_range"
+        },
+        {
+          "hero": "Bucky",
+          "mechanism": "burst_range"
+        },
+        {
+          "hero": "Star-Lord",
+          "mechanism": "mobility_dive"
+        },
+        {
+          "hero": "Psylocke",
+          "mechanism": "mobility_dive"
+        },
+        {
+          "hero": "Luna",
+          "mechanism": "hard_cc"
+        }
+      ],
+      "provides_mechanisms": [
+        "burst_range",
+        "mobility_dive"
+      ]
+    },
+    "Thing": {
+      "role": "Vanguard",
+      "counterability": "medium",
+      "notes": "Polarizing ANSWER hero vs all dive/melee. Beat by burst/poke-from-range he can't trade into.",
+      "countered_by": [
+        {
+          "hero": "Punisher",
+          "mechanism": "burst_range"
+        },
+        {
+          "hero": "Squirrel Girl",
+          "mechanism": "burst_range"
+        },
+        {
+          "hero": "Bucky",
+          "mechanism": "burst_range"
+        },
+        {
+          "hero": "Emma Frost",
+          "mechanism": "range_poke"
+        },
+        {
+          "hero": "Groot",
+          "mechanism": "wall_break"
+        }
+      ],
+      "provides_mechanisms": [
+        "anti_dive",
+        "cc_immune_body",
+        "grounding",
+        "hard_cc"
+      ]
+    },
+    "Thor": {
+      "role": "Vanguard",
+      "counterability": "medium",
+      "notes": "Jack-of-trades but squishy; dies to stacked CC + burst. Invis/White Fox strong.",
+      "countered_by": [
+        {
+          "hero": "Invisible Woman",
+          "mechanism": "displacement"
+        },
+        {
+          "hero": "White Fox",
+          "mechanism": "peel"
+        },
+        {
+          "hero": "Emma Frost",
+          "mechanism": "hard_cc"
+        },
+        {
+          "hero": "Devil Dinosaur",
+          "mechanism": "cc_immune_body"
+        }
+      ],
+      "provides_mechanisms": [
+        "brawl",
+        "displacement",
+        "grounding",
+        "mark",
+        "mobility_dive"
+      ]
+    },
+    "Venom": {
+      "role": "Vanguard",
+      "counterability": "medium",
+      "notes": "Feels unkillable if you all-shoot him; real answer is interrupting grapple-out window + marking pre-dive. Loki is free food FOR Venom.",
+      "countered_by": [
+        {
+          "hero": "Invisible Woman",
+          "mechanism": "displacement"
+        },
+        {
+          "hero": "Jeff",
+          "mechanism": "displacement"
+        },
+        {
+          "hero": "Jean Grey",
+          "mechanism": "hard_cc"
+        },
+        {
+          "hero": "Wolverine",
+          "mechanism": "hard_cc"
+        },
+        {
+          "hero": "Bucky",
+          "mechanism": "hard_cc"
+        },
+        {
+          "hero": "Angela",
+          "mechanism": "mark"
+        }
+      ],
+      "provides_mechanisms": [
+        "cooldown_force",
+        "mobility_dive"
+      ]
+    },
+    "Black Cat": {
+      "role": "Duelist",
+      "counterability": "medium",
+      "notes": "Momentum menace; needs burst+mobility to answer. Thing denies hard. Protect the focused teammate.",
+      "countered_by": [
+        {
+          "hero": "Thing",
+          "mechanism": "anti_dive"
+        },
+        {
+          "hero": "Daredevil",
+          "mechanism": "mobility_dive"
+        },
+        {
+          "hero": "Jean Grey",
+          "mechanism": "burst_range"
+        },
+        {
+          "hero": "Invisible Woman",
+          "mechanism": "peel"
+        },
+        {
+          "hero": "White Fox",
+          "mechanism": "peel"
+        }
+      ],
+      "provides_mechanisms": [
+        "flat_damage",
+        "mobility_dive"
+      ]
+    },
+    "Black Panther": {
+      "role": "Duelist",
+      "counterability": "high",
+      "notes": "Feast-or-famine; Thing shuts him out, pre-dive pressure widens his uptime problem.",
+      "countered_by": [
+        {
+          "hero": "Thing",
+          "mechanism": "anti_dive"
+        },
+        {
+          "hero": "Thor",
+          "mechanism": "mobility_dive"
+        },
+        {
+          "hero": "Hulk",
+          "mechanism": "peel"
+        },
+        {
+          "hero": "Invisible Woman",
+          "mechanism": "peel"
+        }
+      ],
+      "provides_mechanisms": [
+        "flat_damage"
+      ]
+    },
+    "Black Widow": {
+      "role": "Duelist",
+      "counterability": "high",
+      "notes": "Deadly with aim but glaring weaknesses; a SECOND diver breaks her; close gap inside kick range.",
+      "countered_by": [
+        {
+          "hero": "Star-Lord",
+          "mechanism": "mobility_dive"
+        },
+        {
+          "hero": "Psylocke",
+          "mechanism": "mobility_dive"
+        },
+        {
+          "hero": "Venom",
+          "mechanism": "mobility_dive"
+        },
+        {
+          "hero": "Thor",
+          "mechanism": "mobility_dive"
+        }
+      ],
+      "provides_mechanisms": []
+    },
+    "Blade": {
+      "role": "Duelist",
+      "counterability": "high",
+      "notes": "Thrives on sustain vs low-burst comps; add burst/CC and he folds. Loses pound-for-pound.",
+      "countered_by": [
+        {
+          "hero": "Jean Grey",
+          "mechanism": "burst_range"
+        },
+        {
+          "hero": "Bucky",
+          "mechanism": "burst_range"
+        },
+        {
+          "hero": "Luna",
+          "mechanism": "hard_cc"
+        }
+      ],
+      "provides_mechanisms": [
+        "anti_heal"
+      ]
+    },
+    "Daredevil": {
+      "role": "Duelist",
+      "counterability": "medium",
+      "notes": "Menace; bait the reflect, mark pre-dive, stay calm. Conditional on having mark + composure.",
+      "countered_by": [
+        {
+          "hero": "Hulk",
+          "mechanism": "mark"
+        },
+        {
+          "hero": "Thor",
+          "mechanism": "mark"
+        },
+        {
+          "hero": "Angela",
+          "mechanism": "mark"
+        },
+        {
+          "hero": "Luna",
+          "mechanism": "hard_cc"
+        }
+      ],
+      "provides_mechanisms": [
+        "flat_damage",
+        "mobility_dive"
+      ]
+    },
+    "Deadpool_DPS": {
+      "role": "Duelist",
+      "counterability": "medium",
+      "notes": "Weak pre-levels (abuse early); scales to menace. Standard anti-dive answers; respect overtime ult.",
+      "countered_by": [
+        {
+          "hero": "Thing",
+          "mechanism": "anti_dive"
+        },
+        {
+          "hero": "Invisible Woman",
+          "mechanism": "peel"
+        },
+        {
+          "hero": "White Fox",
+          "mechanism": "peel"
+        }
+      ],
+      "provides_mechanisms": []
+    },
+    "Elsa": {
+      "role": "Duelist",
+      "counterability": "medium",
+      "notes": "No glaring bad matchups; value is the ult -- deny ult clustering. Divers can pressure her.",
+      "countered_by": [
+        {
+          "hero": "Daredevil",
+          "mechanism": "mobility_dive"
+        },
+        {
+          "hero": "Black Cat",
+          "mechanism": "mobility_dive"
+        },
+        {
+          "hero": "Thor",
+          "mechanism": "mobility_dive"
+        }
+      ],
+      "provides_mechanisms": [
+        "range_poke",
+        "survive_onslaught"
+      ]
+    },
+    "Hawkeye": {
+      "role": "Duelist",
+      "counterability": "high",
+      "notes": "Black-Widow weaknesses but worse; folds completely to mobility/dive/off-angles.",
+      "countered_by": [
+        {
+          "hero": "Star-Lord",
+          "mechanism": "mobility_dive"
+        },
+        {
+          "hero": "Psylocke",
+          "mechanism": "mobility_dive"
+        },
+        {
+          "hero": "Spider-Man",
+          "mechanism": "mobility_dive"
+        },
+        {
+          "hero": "Mantis",
+          "mechanism": "range_poke"
+        }
+      ],
+      "provides_mechanisms": [
+        "range_poke"
+      ]
+    },
+    "Hela": {
+      "role": "Duelist",
+      "counterability": "medium",
+      "notes": "Lethal with aim vs DPS; weaker vs mobile tanks. Deny sightlines, close fast.",
+      "countered_by": [
+        {
+          "hero": "Angela",
+          "mechanism": "mark"
+        },
+        {
+          "hero": "Thor",
+          "mechanism": "mobility_dive"
+        },
+        {
+          "hero": "Rogue",
+          "mechanism": "mobility_dive"
+        },
+        {
+          "hero": "Doctor Strange",
+          "mechanism": "contest_vertical"
+        }
+      ],
+      "provides_mechanisms": [
+        "burst_range",
+        "hitscan"
+      ]
+    },
+    "Human Torch": {
+      "role": "Duelist",
+      "counterability": "high",
+      "notes": "Permaflyer; grounding + hitscan answer cleanly. Luna/Adam dominate.",
+      "countered_by": [
+        {
+          "hero": "Bucky",
+          "mechanism": "grounding"
+        },
+        {
+          "hero": "Hulk",
+          "mechanism": "grounding"
+        },
+        {
+          "hero": "Thor",
+          "mechanism": "grounding"
+        },
+        {
+          "hero": "Devil Dinosaur",
+          "mechanism": "grounding"
+        },
+        {
+          "hero": "Luna",
+          "mechanism": "hitscan"
+        },
+        {
+          "hero": "Adam",
+          "mechanism": "range_poke"
+        }
+      ],
+      "provides_mechanisms": []
+    },
+    "Iron Fist": {
+      "role": "Duelist",
+      "counterability": "medium",
+      "notes": "Tank-buster; discipline vs block/deflect is everything. White Fox out-brawls him. Conditional on disciplined burst.",
+      "countered_by": [
+        {
+          "hero": "White Fox",
+          "mechanism": "peel"
+        },
+        {
+          "hero": "Thor",
+          "mechanism": "brawl"
+        },
+        {
+          "hero": "Bucky",
+          "mechanism": "burst_range"
+        }
+      ],
+      "provides_mechanisms": [
+        "flat_damage"
+      ]
+    },
+    "Iron Man": {
+      "role": "Duelist",
+      "counterability": "high",
+      "notes": "Less mobile than Torch; Magneto hard-counters (180 cancels his ult value).",
+      "countered_by": [
+        {
+          "hero": "Magneto",
+          "mechanism": "ult_turnaround"
+        },
+        {
+          "hero": "Star-Lord",
+          "mechanism": "hitscan"
+        },
+        {
+          "hero": "Bucky",
+          "mechanism": "hitscan"
+        },
+        {
+          "hero": "Spider-Man",
+          "mechanism": "mobility_dive"
+        },
+        {
+          "hero": "Angela",
+          "mechanism": "mark"
+        }
+      ],
+      "provides_mechanisms": []
+    },
+    "Magik": {
+      "role": "Duelist",
+      "counterability": "high",
+      "notes": "Oppressive in close corridors; melee-shutdown tanks + any CC + range answer her.",
+      "countered_by": [
+        {
+          "hero": "Peni Parker",
+          "mechanism": "zone_denial"
+        },
+        {
+          "hero": "Thing",
+          "mechanism": "anti_dive"
+        },
+        {
+          "hero": "Thor",
+          "mechanism": "mark"
+        },
+        {
+          "hero": "White Fox",
+          "mechanism": "peel"
+        },
+        {
+          "hero": "Luna",
+          "mechanism": "hard_cc"
+        }
+      ],
+      "provides_mechanisms": []
+    },
+    "Mr Fantastic": {
+      "role": "Duelist",
+      "counterability": "medium",
+      "notes": "Cooldown-read dependent; killable in big-body/ult; poke-from-range beats him. Force out the Dorito.",
+      "countered_by": [
+        {
+          "hero": "Luna",
+          "mechanism": "hard_cc"
+        },
+        {
+          "hero": "White Fox",
+          "mechanism": "range_poke"
+        },
+        {
+          "hero": "Punisher",
+          "mechanism": "range_poke"
+        }
+      ],
+      "provides_mechanisms": [
+        "survive_onslaught"
+      ]
+    },
+    "Moon Knight": {
+      "role": "Duelist",
+      "counterability": "conditional",
+      "notes": "MUST-ANSWER threat; if your comp can hunt him (mobility tank/dive DPS) Don't turtle.",
+      "countered_by": [
+        {
+          "hero": "Psylocke",
+          "mechanism": "mobility_dive"
+        },
+        {
+          "hero": "Angela",
+          "mechanism": "mark"
+        },
+        {
+          "hero": "Hulk",
+          "mechanism": "mark"
+        },
+        {
+          "hero": "Thor",
+          "mechanism": "mark"
+        }
+      ],
+      "provides_mechanisms": [
+        "burst_range",
+        "range_poke"
+      ]
+    },
+    "Namor": {
+      "role": "Duelist",
+      "counterability": "low",
+      "notes": "Few bad matchups; good vs field. Kill the squids constantly.",
+      "countered_by": [
+        {
+          "hero": "Groot",
+          "mechanism": "contest_vertical"
+        },
+        {
+          "hero": "Doctor Strange",
+          "mechanism": "contest_vertical"
+        },
+        {
+          "hero": "Thor",
+          "mechanism": "mobility_dive"
+        },
+        {
+          "hero": "Magneto",
+          "mechanism": "range_poke"
+        }
+      ],
+      "provides_mechanisms": [
+        "range_poke"
+      ]
+    },
+    "Jean Grey": {
+      "role": "Duelist",
+      "counterability": "low",
+      "notes": "'No counters'; good vs nearly the whole field. Beat only by setting your own terms + range-advantage heroes.",
+      "countered_by": [
+        {
+          "hero": "Daredevil",
+          "mechanism": "mobility_dive"
+        },
+        {
+          "hero": "Black Cat",
+          "mechanism": "mobility_dive"
+        },
+        {
+          "hero": "Hawkeye",
+          "mechanism": "range_poke"
+        },
+        {
+          "hero": "Angela",
+          "mechanism": "mark"
+        }
+      ],
+      "provides_mechanisms": [
+        "burst_range",
+        "hard_cc",
+        "hitscan",
+        "range_poke"
+      ]
+    },
+    "Psylocke": {
+      "role": "Duelist",
+      "counterability": "medium",
+      "notes": "Scales with skill, sets terms; burst-from-range + divers + mirror-mark answer. Loki is the support counter.",
+      "countered_by": [
+        {
+          "hero": "Hela",
+          "mechanism": "burst_range"
+        },
+        {
+          "hero": "Jean Grey",
+          "mechanism": "burst_range"
+        },
+        {
+          "hero": "Daredevil",
+          "mechanism": "mobility_dive"
+        },
+        {
+          "hero": "Loki",
+          "mechanism": "support_deny"
+        },
+        {
+          "hero": "White Fox",
+          "mechanism": "hard_cc"
+        }
+      ],
+      "provides_mechanisms": [
+        "mobility_dive",
+        "range_poke"
+      ]
+    },
+    "Scarlet Witch": {
+      "role": "Duelist",
+      "counterability": "high",
+      "notes": "TTK problem; any fast-killing hero + CC punishes. Skill-floor counter (needs your aim).",
+      "countered_by": [
+        {
+          "hero": "Bucky",
+          "mechanism": "burst_range"
+        },
+        {
+          "hero": "Hela",
+          "mechanism": "burst_range"
+        },
+        {
+          "hero": "Luna",
+          "mechanism": "hard_cc"
+        }
+      ],
+      "provides_mechanisms": []
+    },
+    "Spider-Man": {
+      "role": "Duelist",
+      "counterability": "conditional",
+      "notes": "Fragile, telegraphed; punish hardest while he's mid-combo on someone else. Conditional on mechanics/sustain. Save anti-ult CC.",
+      "countered_by": [
+        {
+          "hero": "Mr Fantastic",
+          "mechanism": "survive_onslaught"
+        },
+        {
+          "hero": "Elsa",
+          "mechanism": "survive_onslaught"
+        },
+        {
+          "hero": "Thing",
+          "mechanism": "cc_immune_body"
+        },
+        {
+          "hero": "Devil Dinosaur",
+          "mechanism": "cc_immune_body"
+        }
+      ],
+      "provides_mechanisms": [
+        "mobility_dive"
+      ]
+    },
+    "Squirrel Girl": {
+      "role": "Duelist",
+      "counterability": "conditional",
+      "notes": "MUST-ANSWER like Moon Knight; 'too easy to kill' IF you hunt with mobility/range-tanks. Shoot the ult squirrels.",
+      "countered_by": [
+        {
+          "hero": "Psylocke",
+          "mechanism": "mobility_dive"
+        },
+        {
+          "hero": "Magneto",
+          "mechanism": "range_poke"
+        },
+        {
+          "hero": "Deadpool_Tank",
+          "mechanism": "range_poke"
+        },
+        {
+          "hero": "Spider-Man",
+          "mechanism": "mobility_dive"
+        }
+      ],
+      "provides_mechanisms": [
+        "burst_range",
+        "range_poke"
+      ]
+    },
+    "Star-Lord": {
+      "role": "Duelist",
+      "counterability": "medium",
+      "notes": "No overwhelming weakness; skill-based. Don't over-extend engagements (he wins long fights). Magneto folds his ult.",
+      "countered_by": [
+        {
+          "hero": "Emma Frost",
+          "mechanism": "prolonged_hitbox"
+        },
+        {
+          "hero": "Magneto",
+          "mechanism": "ult_turnaround"
+        },
+        {
+          "hero": "Jean Grey",
+          "mechanism": "burst_range"
+        },
+        {
+          "hero": "Hela",
+          "mechanism": "burst_range"
+        }
+      ],
+      "provides_mechanisms": [
+        "hitscan",
+        "mobility_dive",
+        "range_poke",
+        "wall_break"
+      ]
+    },
+    "Storm": {
+      "role": "Duelist",
+      "counterability": "high",
+      "notes": "Low/short flight, clumps with team; grounding + hitscan answer. Punisher ult counters her ult.",
+      "countered_by": [
+        {
+          "hero": "Punisher",
+          "mechanism": "ult_turnaround"
+        },
+        {
+          "hero": "Thing",
+          "mechanism": "grounding"
+        },
+        {
+          "hero": "Thor",
+          "mechanism": "grounding"
+        },
+        {
+          "hero": "Star-Lord",
+          "mechanism": "hitscan"
+        }
+      ],
+      "provides_mechanisms": [
+        "burst_range"
+      ]
+    },
+    "Punisher": {
+      "role": "Duelist",
+      "counterability": "medium",
+      "notes": "Susceptible to multi-angle dive; Magneto beats him straight up; needs protection.",
+      "countered_by": [
+        {
+          "hero": "Magneto",
+          "mechanism": "range_poke"
+        },
+        {
+          "hero": "Star-Lord",
+          "mechanism": "mobility_dive"
+        },
+        {
+          "hero": "Daredevil",
+          "mechanism": "mobility_dive"
+        },
+        {
+          "hero": "Black Cat",
+          "mechanism": "mobility_dive"
+        }
+      ],
+      "provides_mechanisms": [
+        "burst_range",
+        "range_poke",
+        "ult_turnaround",
+        "wall_break"
+      ]
+    },
+    "Bucky": {
+      "role": "Duelist",
+      "counterability": "medium",
+      "notes": "Good vs low-tier picks, bad vs long-range + all-in dive; zoned by frontline. Deny the ult reset. Don't get hooked.",
+      "countered_by": [
+        {
+          "hero": "Jean Grey",
+          "mechanism": "range_poke"
+        },
+        {
+          "hero": "Namor",
+          "mechanism": "range_poke"
+        },
+        {
+          "hero": "Magneto",
+          "mechanism": "zone_denial"
+        },
+        {
+          "hero": "Emma Frost",
+          "mechanism": "zone_denial"
+        }
+      ],
+      "provides_mechanisms": [
+        "burst_range",
+        "grounding",
+        "hard_cc",
+        "hitscan",
+        "wall_break"
+      ]
+    },
+    "Wolverine": {
+      "role": "Duelist",
+      "counterability": "conditional",
+      "notes": "Devastates non-CC-immune tanks; answer = CC-immune bodies + burst to shoot him + Invis pull. Break his overshield. Conditional on having the answer.",
+      "countered_by": [
+        {
+          "hero": "Devil Dinosaur",
+          "mechanism": "cc_immune_body"
+        },
+        {
+          "hero": "Thing",
+          "mechanism": "cc_immune_body"
+        },
+        {
+          "hero": "Invisible Woman",
+          "mechanism": "displacement"
+        },
+        {
+          "hero": "Luna",
+          "mechanism": "peel"
+        }
+      ],
+      "provides_mechanisms": [
+        "hard_cc"
+      ]
+    },
+    "Adam": {
+      "role": "Strategist",
+      "counterability": "medium",
+      "notes": "Strong if allowed free off-angles; hunt him, force soul bond early, deny free ults.",
+      "countered_by": [
+        {
+          "hero": "Psylocke",
+          "mechanism": "mobility_dive"
+        },
+        {
+          "hero": "Star-Lord",
+          "mechanism": "range_poke"
+        },
+        {
+          "hero": "Thor",
+          "mechanism": "mobility_dive"
+        }
+      ],
+      "provides_mechanisms": [
+        "range_poke"
+      ]
+    },
+    "Cloak and Dagger": {
+      "role": "Strategist",
+      "counterability": "high",
+      "notes": "'Straight up killable' -- bait/force the bubble, re-engage, kill.",
+      "countered_by": [
+        {
+          "hero": "Venom",
+          "mechanism": "mobility_dive"
+        },
+        {
+          "hero": "Daredevil",
+          "mechanism": "mobility_dive"
+        },
+        {
+          "hero": "Thor",
+          "mechanism": "displacement"
+        },
+        {
+          "hero": "Magneto",
+          "mechanism": "burst_range"
+        },
+        {
+          "hero": "Hulk",
+          "mechanism": "mobility_dive"
+        }
+      ],
+      "provides_mechanisms": []
+    },
+    "Deadpool_Strat": {
+      "role": "Strategist",
+      "counterability": "medium",
+      "notes": "Strong in all-in brawl/triple-support; respect ult, give space rather than mirror.",
+      "countered_by": [
+        {
+          "hero": "Magneto",
+          "mechanism": "zone_denial"
+        },
+        {
+          "hero": "Groot",
+          "mechanism": "zone_denial"
+        }
+      ],
+      "provides_mechanisms": []
+    },
+    "Gambit": {
+      "role": "Strategist",
+      "counterability": "low",
+      "notes": "Strong vs field; killable but resilient, huge ult, cleanse. Highest-priority threat to answer via pick/swap.",
+      "countered_by": [
+        {
+          "hero": "Magneto",
+          "mechanism": "ult_turnaround"
+        },
+        {
+          "hero": "Doctor Strange",
+          "mechanism": "ult_turnaround"
+        },
+        {
+          "hero": "Psylocke",
+          "mechanism": "range_poke"
+        },
+        {
+          "hero": "Thing",
+          "mechanism": "hard_cc"
+        }
+      ],
+      "provides_mechanisms": [
+        "anti_heal"
+      ]
+    },
+    "Invisible Woman": {
+      "role": "Strategist",
+      "counterability": "medium",
+      "notes": "All-round vs dive; worn down by range (Punisher) and ignored by Magneto. Needs coordinated 2-person dive to punish. No true bad matchups. Also an answer hero.",
+      "countered_by": [
+        {
+          "hero": "Punisher",
+          "mechanism": "range_poke"
+        },
+        {
+          "hero": "Magneto",
+          "mechanism": "range_poke"
+        },
+        {
+          "hero": "Moon Knight",
+          "mechanism": "range_poke"
+        }
+      ],
+      "provides_mechanisms": [
+        "displacement",
+        "peel"
+      ]
+    },
+    "Jeff": {
+      "role": "Strategist",
+      "counterability": "conditional",
+      "notes": "Menace vs hard-to-interact heroes; flat-damage DPS kill him underwater. Need an anti-ult plan (mobility / CC-immune / sandbag ult). Conditional.",
+      "countered_by": [
+        {
+          "hero": "Daredevil",
+          "mechanism": "flat_damage"
+        },
+        {
+          "hero": "Black Cat",
+          "mechanism": "flat_damage"
+        },
+        {
+          "hero": "Black Panther",
+          "mechanism": "flat_damage"
+        },
+        {
+          "hero": "Iron Fist",
+          "mechanism": "flat_damage"
+        }
+      ],
+      "provides_mechanisms": [
+        "displacement",
+        "range_poke"
+      ]
+    },
+    "Loki": {
+      "role": "Strategist",
+      "counterability": "medium",
+      "notes": "Battle of cooldowns; pressure clones/teleport/totems, fight only when forced out. Venom/Thor extra value.",
+      "countered_by": [
+        {
+          "hero": "Venom",
+          "mechanism": "cooldown_force"
+        },
+        {
+          "hero": "Thor",
+          "mechanism": "mobility_dive"
+        },
+        {
+          "hero": "Moon Knight",
+          "mechanism": "range_poke"
+        },
+        {
+          "hero": "Luna",
+          "mechanism": "clone_pressure"
+        }
+      ],
+      "provides_mechanisms": [
+        "support_deny"
+      ]
+    },
+    "Luna": {
+      "role": "Strategist",
+      "counterability": "medium",
+      "notes": "Very strong; tanks counter better than DPS; full dive comp is her weakness.",
+      "countered_by": [
+        {
+          "hero": "Venom",
+          "mechanism": "mobility_dive"
+        },
+        {
+          "hero": "Thor",
+          "mechanism": "mobility_dive"
+        },
+        {
+          "hero": "Doctor Strange",
+          "mechanism": "contest_vertical"
+        },
+        {
+          "hero": "Black Cat",
+          "mechanism": "mobility_dive"
+        }
+      ],
+      "provides_mechanisms": [
+        "clone_pressure",
+        "hard_cc",
+        "hitscan",
+        "peel"
+      ]
+    },
+    "Mantis": {
+      "role": "Strategist",
+      "counterability": "medium",
+      "notes": "Triple-support enabler; punish overaggression, kill-through-ult combos (Groot+combo), starve the comp's lone DPS. Beat the system, not the hero.",
+      "countered_by": [
+        {
+          "hero": "Groot",
+          "mechanism": "kill_through_ult"
+        },
+        {
+          "hero": "Venom",
+          "mechanism": "mobility_dive"
+        }
+      ],
+      "provides_mechanisms": [
+        "range_poke"
+      ]
+    },
+    "Rocket": {
+      "role": "Strategist",
+      "counterability": "medium",
+      "notes": "No CC, weak damage; relentless chase + hitscan beats him; pre-break res beacons. Counter his ult by walking on it.",
+      "countered_by": [
+        {
+          "hero": "Jean Grey",
+          "mechanism": "hitscan"
+        },
+        {
+          "hero": "Angela",
+          "mechanism": "mobility_dive"
+        },
+        {
+          "hero": "Psylocke",
+          "mechanism": "mobility_dive"
+        },
+        {
+          "hero": "Star-Lord",
+          "mechanism": "range_poke"
+        }
+      ],
+      "provides_mechanisms": []
+    },
+    "Ultron": {
+      "role": "Strategist",
+      "counterability": "medium",
+      "notes": "Triple-support skybox; deny high ground with hitscan/burst, Magneto ult, Angela. Divers weak into him.",
+      "countered_by": [
+        {
+          "hero": "Magneto",
+          "mechanism": "ult_turnaround"
+        },
+        {
+          "hero": "Angela",
+          "mechanism": "mark"
+        },
+        {
+          "hero": "Star-Lord",
+          "mechanism": "hitscan"
+        },
+        {
+          "hero": "Hela",
+          "mechanism": "hitscan"
+        }
+      ],
+      "provides_mechanisms": []
+    },
+    "White Fox": {
+      "role": "Strategist",
+      "counterability": "medium",
+      "notes": "Elite vs dive/brawl; weak ONLY to hitscan-from-range in isolation; with a dive comp she beats even her counters. Also an answer hero.",
+      "countered_by": [
+        {
+          "hero": "Jean Grey",
+          "mechanism": "range_poke"
+        },
+        {
+          "hero": "Punisher",
+          "mechanism": "range_poke"
+        },
+        {
+          "hero": "Moon Knight",
+          "mechanism": "range_poke"
+        },
+        {
+          "hero": "Namor",
+          "mechanism": "range_poke"
+        },
+        {
+          "hero": "Elsa",
+          "mechanism": "range_poke"
+        }
+      ],
+      "provides_mechanisms": [
+        "hard_cc",
+        "mobility_dive",
+        "peel",
+        "range_poke"
+      ]
+    }
+  },
+  "_archival_do_not_use": {
+    "_comment": "QUARANTINED per D-004. NOT read by the engine runtime. Ban framing is prohibited (CLAUDE.md). The counterability signal survives via heroes[].counterability + threat weights; this ban-scoring is dead metadata kept only for provenance. Do NOT wire this into any output.",
+    "ban_logic": "counterability LOW  -> ban_value HIGH (hard to answer via pick).  counterability HIGH -> ban_value LOW (just counter-pick it).  counterability CONDITIONAL -> depends on whether OUR comp can deliver the required mechanism; resolve at runtime against our comfort pool.",
+    "ban_value_numeric": {
+      "low": 0.85,
+      "medium": 0.5,
+      "high": 0.2,
+      "conditional": 0.5
+    },
+    "ban_notes": {
+      "Black Panther": "Jeff is free food for BP -- avoid Jeff into him."
+    }
   }
 }

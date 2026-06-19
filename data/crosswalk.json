@@ -1,0 +1,45 @@
+{
+  "meta": {
+    "component": "Phase 0.3 — mechanism <-> comp-function crosswalk (D-002).",
+    "purpose": "The join the council caught was missing. counter_kb speaks 'mechanism' (how you beat enemy hero X); comp_gap_model speaks 'function' (what role your comp needs). This file maps between the two closed vocabularies so the engine's counter mode and comp-gap mode can be scored on one objective (D-009).",
+    "direction": "mechanism_to_function is authoritative. function_to_mechanism is the derived inverse (regenerated from it; do not hand-edit).",
+    "usage_counter_mode": "When the enemy comp needs mechanism M to be answered, a candidate pick that provides M also CREDITS the comp-functions M maps to. Lets a single pick close a counter-threat AND a comp gap (the D-009 'covers multiple gaps' bonus).",
+    "usage_comp_mode": "When comp-gap mode finds function F uncovered, function_to_mechanism[F] tells the engine which provides_mechanisms (registry/counter_kb 0.7) actually deliver F.",
+    "vocab_source": "data/registry.json — mechanism_vocab (24) and function_vocab (10). Every key here MUST exist there; zod validates zero unknown tokens. A mechanism may map to 0..n functions (some are pure matchup mechanics with no standing comp-function, e.g. mark / cooldown_force).",
+    "compliance": "No ban vocab. No enemy stats. Pure taxonomy."
+  },
+
+  "mechanism_to_function": {
+    "anti_dive":          ["anti_dive_peel"],
+    "peel":               ["anti_dive_peel", "sustain_healing"],
+    "cc_immune_body":     ["anti_dive_peel", "frontline_space"],
+    "hard_cc":            ["anti_dive_peel", "burst_pick"],
+    "displacement":       ["anti_dive_peel"],
+    "brawl":              ["frontline_space"],
+    "zone_denial":        ["zone_wall", "anti_dive_peel"],
+    "wall_break":         ["zone_wall"],
+    "contest_vertical":   ["zone_wall", "anti_flyer_grounding"],
+    "grounding":          ["anti_flyer_grounding"],
+    "hitscan":            ["anti_flyer_grounding", "range_poke"],
+    "range_poke":         ["range_poke"],
+    "burst_range":        ["burst_pick", "range_poke"],
+    "mobility_dive":      ["dive_flank"],
+    "flat_damage":        ["dive_flank", "burst_pick"],
+    "survive_onslaught":  ["anti_dive_peel"],
+    "anti_heal":          ["anti_heal"],
+    "ult_turnaround":     ["ult_denial_defensive"],
+    "kill_through_ult":   ["burst_pick"],
+    "support_deny":       ["dive_flank"],
+    "cooldown_force":     ["dive_flank"],
+    "clone_pressure":     [],
+    "prolonged_hitbox":   [],
+    "mark":               []
+  },
+
+  "unmapped_mechanisms_note": {
+    "comment": "These mechanisms are pure matchup tactics with no standing comp-FUNCTION (they don't define a comp role; they're per-duel tools). They still credit COUNTER coverage, just not comp-gap coverage. Kept explicit so a future reader doesn't think they were forgotten.",
+    "mark": "Pre-dive focus-fire marker (Hulk/Thor/Angela). A tactic, not a comp role.",
+    "clone_pressure": "Loki-mirror cooldown pressure. Single-edge matchup tool.",
+    "prolonged_hitbox": "Star-Lord big-hitbox exploit (Emma). One-off matchup quirk."
+  }
+}

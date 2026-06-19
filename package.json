@@ -1,0 +1,22 @@
+{
+  "name": "rivals-coach",
+  "version": "0.0.0",
+  "private": true,
+  "description": "GEP-only Overwolf coaching overlay for Marvel Rivals — pick/swap/hold from your own comfort pool. Coach, not a stats tracker.",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "validate": "tsx src/schema/validate.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "tsx": "^4.16.0",
+    "typescript": "^5.5.0"
+  },
+  "dependencies": {
+    "zod": "^3.23.8"
+  }
+}

@@ -1,0 +1,577 @@
+{
+  "meta": {
+    "purpose": "Canonical registry (Phase 0.1, D-002). Single source of truth ABOVE all data/*.json KBs. A KB that disagrees with this file is the bug.",
+    "generated_from": [
+      "data/counter_kb.json (heroes, aka)",
+      "data/comp_gap_model.json (comp_functions)"
+    ],
+    "join_key": "character_id (internal stable int). gep_character_name resolves the live GEP roster string to a canonical_key; aliases (incl. aka) also resolve. Track live players by uid, never roster index.",
+    "character_id_note": "character_id here is an INTERNAL stable id, NOT the Overwolf GEP numeric character_id. The GEP id mapping is gated on the GEP data spike (Q-001) and will be added as gep_character_id when confirmed in a real match. Until then the live join keys off gep_character_name.",
+    "deadpool_note": "Deadpool_Tank/DPS/Strat are 3 distinct canonical keys (role split) but GEP emits ONE character_name \"Deadpool\" (A3). Live disambiguation by role is impossible from character_name alone; resolve via observed role slot or default. See unresolved_gep_collisions.",
+    "mechanism_reconciliation": "A1 fix: 13 declared vs 32 used mechanism tokens reconciled to a 24-token closed vocab via moderate-collapse synonym merges (see mechanism_merge_map). Declared-but-unused percent_damage dropped; flat_damage kept (has real edges).",
+    "compliance": "No ban vocab in this file. No enemy stats. Display/identity only; matchup logic keys off canonical_key."
+  },
+  "mechanism_vocab": [
+    "anti_dive",
+    "anti_heal",
+    "brawl",
+    "burst_range",
+    "cc_immune_body",
+    "clone_pressure",
+    "contest_vertical",
+    "cooldown_force",
+    "displacement",
+    "flat_damage",
+    "grounding",
+    "hard_cc",
+    "hitscan",
+    "kill_through_ult",
+    "mark",
+    "mobility_dive",
+    "peel",
+    "prolonged_hitbox",
+    "range_poke",
+    "support_deny",
+    "survive_onslaught",
+    "ult_turnaround",
+    "wall_break",
+    "zone_denial"
+  ],
+  "mechanism_merge_map": {
+    "range_advantage": "range_poke",
+    "space_denial": "zone_denial",
+    "ult_zone": "zone_denial",
+    "chase": "mobility_dive",
+    "contest": "contest_vertical",
+    "go_over": "contest_vertical",
+    "ult_counter": "ult_turnaround",
+    "ult_punish": "ult_turnaround"
+  },
+  "function_vocab": [
+    "frontline_space",
+    "sustain_healing",
+    "anti_dive_peel",
+    "anti_flyer_grounding",
+    "burst_pick",
+    "range_poke",
+    "dive_flank",
+    "zone_wall",
+    "anti_heal",
+    "ult_denial_defensive"
+  ],
+  "roles": [
+    "Vanguard",
+    "Duelist",
+    "Strategist"
+  ],
+  "counterability_tiers": [
+    "low",
+    "medium",
+    "high",
+    "conditional"
+  ],
+  "heroes": {
+    "Angela": {
+      "character_id": 1,
+      "canonical_key": "Angela",
+      "display_name": "Angela",
+      "gep_character_name": "Angela",
+      "role": "Duelist",
+      "aliases": []
+    },
+    "Captain America": {
+      "character_id": 2,
+      "canonical_key": "Captain America",
+      "display_name": "Captain America",
+      "gep_character_name": "Captain America",
+      "role": "Vanguard",
+      "aliases": []
+    },
+    "Deadpool_Tank": {
+      "character_id": 3,
+      "canonical_key": "Deadpool_Tank",
+      "display_name": "Deadpool",
+      "gep_character_name": "Deadpool",
+      "role": "Vanguard",
+      "aliases": []
+    },
+    "Devil Dinosaur": {
+      "character_id": 4,
+      "canonical_key": "Devil Dinosaur",
+      "display_name": "Devil Dinosaur",
+      "gep_character_name": "Devil Dinosaur",
+      "role": "Vanguard",
+      "aliases": []
+    },
+    "Doctor Strange": {
+      "character_id": 5,
+      "canonical_key": "Doctor Strange",
+      "display_name": "Doctor Strange",
+      "gep_character_name": "Doctor Strange",
+      "role": "Vanguard",
+      "aliases": []
+    },
+    "Emma Frost": {
+      "character_id": 6,
+      "canonical_key": "Emma Frost",
+      "display_name": "Emma Frost",
+      "gep_character_name": "Emma Frost",
+      "role": "Vanguard",
+      "aliases": []
+    },
+    "Groot": {
+      "character_id": 7,
+      "canonical_key": "Groot",
+      "display_name": "Groot",
+      "gep_character_name": "Groot",
+      "role": "Vanguard",
+      "aliases": []
+    },
+    "Hulk": {
+      "character_id": 8,
+      "canonical_key": "Hulk",
+      "display_name": "Hulk",
+      "gep_character_name": "Hulk",
+      "role": "Vanguard",
+      "aliases": []
+    },
+    "Magneto": {
+      "character_id": 9,
+      "canonical_key": "Magneto",
+      "display_name": "Magneto",
+      "gep_character_name": "Magneto",
+      "role": "Vanguard",
+      "aliases": []
+    },
+    "Peni Parker": {
+      "character_id": 10,
+      "canonical_key": "Peni Parker",
+      "display_name": "Peni Parker",
+      "gep_character_name": "Peni Parker",
+      "role": "Vanguard",
+      "aliases": []
+    },
+    "Rogue": {
+      "character_id": 11,
+      "canonical_key": "Rogue",
+      "display_name": "Rogue",
+      "gep_character_name": "Rogue",
+      "role": "Vanguard",
+      "aliases": []
+    },
+    "Thing": {
+      "character_id": 12,
+      "canonical_key": "Thing",
+      "display_name": "Thing",
+      "gep_character_name": "Thing",
+      "role": "Vanguard",
+      "aliases": []
+    },
+    "Thor": {
+      "character_id": 13,
+      "canonical_key": "Thor",
+      "display_name": "Thor",
+      "gep_character_name": "Thor",
+      "role": "Vanguard",
+      "aliases": []
+    },
+    "Venom": {
+      "character_id": 14,
+      "canonical_key": "Venom",
+      "display_name": "Venom",
+      "gep_character_name": "Venom",
+      "role": "Vanguard",
+      "aliases": []
+    },
+    "Black Cat": {
+      "character_id": 15,
+      "canonical_key": "Black Cat",
+      "display_name": "Black Cat",
+      "gep_character_name": "Black Cat",
+      "role": "Duelist",
+      "aliases": []
+    },
+    "Black Panther": {
+      "character_id": 16,
+      "canonical_key": "Black Panther",
+      "display_name": "Black Panther",
+      "gep_character_name": "Black Panther",
+      "role": "Duelist",
+      "aliases": []
+    },
+    "Black Widow": {
+      "character_id": 17,
+      "canonical_key": "Black Widow",
+      "display_name": "Black Widow",
+      "gep_character_name": "Black Widow",
+      "role": "Duelist",
+      "aliases": []
+    },
+    "Blade": {
+      "character_id": 18,
+      "canonical_key": "Blade",
+      "display_name": "Blade",
+      "gep_character_name": "Blade",
+      "role": "Duelist",
+      "aliases": []
+    },
+    "Daredevil": {
+      "character_id": 19,
+      "canonical_key": "Daredevil",
+      "display_name": "Daredevil",
+      "gep_character_name": "Daredevil",
+      "role": "Duelist",
+      "aliases": []
+    },
+    "Deadpool_DPS": {
+      "character_id": 20,
+      "canonical_key": "Deadpool_DPS",
+      "display_name": "Deadpool",
+      "gep_character_name": "Deadpool",
+      "role": "Duelist",
+      "aliases": []
+    },
+    "Elsa": {
+      "character_id": 21,
+      "canonical_key": "Elsa",
+      "display_name": "Elsa",
+      "gep_character_name": "Elsa",
+      "role": "Duelist",
+      "aliases": []
+    },
+    "Hawkeye": {
+      "character_id": 22,
+      "canonical_key": "Hawkeye",
+      "display_name": "Hawkeye",
+      "gep_character_name": "Hawkeye",
+      "role": "Duelist",
+      "aliases": []
+    },
+    "Hela": {
+      "character_id": 23,
+      "canonical_key": "Hela",
+      "display_name": "Hela",
+      "gep_character_name": "Hela",
+      "role": "Duelist",
+      "aliases": []
+    },
+    "Human Torch": {
+      "character_id": 24,
+      "canonical_key": "Human Torch",
+      "display_name": "Human Torch",
+      "gep_character_name": "Human Torch",
+      "role": "Duelist",
+      "aliases": []
+    },
+    "Iron Fist": {
+      "character_id": 25,
+      "canonical_key": "Iron Fist",
+      "display_name": "Iron Fist",
+      "gep_character_name": "Iron Fist",
+      "role": "Duelist",
+      "aliases": []
+    },
+    "Iron Man": {
+      "character_id": 26,
+      "canonical_key": "Iron Man",
+      "display_name": "Iron Man",
+      "gep_character_name": "Iron Man",
+      "role": "Duelist",
+      "aliases": []
+    },
+    "Magik": {
+      "character_id": 27,
+      "canonical_key": "Magik",
+      "display_name": "Magik",
+      "gep_character_name": "Magik",
+      "role": "Duelist",
+      "aliases": []
+    },
+    "Mr Fantastic": {
+      "character_id": 28,
+      "canonical_key": "Mr Fantastic",
+      "display_name": "Mister Fantastic",
+      "gep_character_name": "Mr Fantastic",
+      "role": "Duelist",
+      "aliases": []
+    },
+    "Moon Knight": {
+      "character_id": 29,
+      "canonical_key": "Moon Knight",
+      "display_name": "Moon Knight",
+      "gep_character_name": "Moon Knight",
+      "role": "Duelist",
+      "aliases": []
+    },
+    "Namor": {
+      "character_id": 30,
+      "canonical_key": "Namor",
+      "display_name": "Namor",
+      "gep_character_name": "Namor",
+      "role": "Duelist",
+      "aliases": []
+    },
+    "Jean Grey": {
+      "character_id": 31,
+      "canonical_key": "Jean Grey",
+      "display_name": "Jean Grey",
+      "gep_character_name": "Jean Grey",
+      "role": "Duelist",
+      "aliases": [
+        "Phoenix",
+        "Gan",
+        "Gene"
+      ]
+    },
+    "Psylocke": {
+      "character_id": 32,
+      "canonical_key": "Psylocke",
+      "display_name": "Psylocke",
+      "gep_character_name": "Psylocke",
+      "role": "Duelist",
+      "aliases": [
+        "Psylock",
+        "Sai",
+        "Sigh"
+      ]
+    },
+    "Scarlet Witch": {
+      "character_id": 33,
+      "canonical_key": "Scarlet Witch",
+      "display_name": "Scarlet Witch",
+      "gep_character_name": "Scarlet Witch",
+      "role": "Duelist",
+      "aliases": []
+    },
+    "Spider-Man": {
+      "character_id": 34,
+      "canonical_key": "Spider-Man",
+      "display_name": "Spider-Man",
+      "gep_character_name": "Spider-Man",
+      "role": "Duelist",
+      "aliases": []
+    },
+    "Squirrel Girl": {
+      "character_id": 35,
+      "canonical_key": "Squirrel Girl",
+      "display_name": "Squirrel Girl",
+      "gep_character_name": "Squirrel Girl",
+      "role": "Duelist",
+      "aliases": []
+    },
+    "Star-Lord": {
+      "character_id": 36,
+      "canonical_key": "Star-Lord",
+      "display_name": "Star-Lord",
+      "gep_character_name": "Star-Lord",
+      "role": "Duelist",
+      "aliases": []
+    },
+    "Storm": {
+      "character_id": 37,
+      "canonical_key": "Storm",
+      "display_name": "Storm",
+      "gep_character_name": "Storm",
+      "role": "Duelist",
+      "aliases": []
+    },
+    "Punisher": {
+      "character_id": 38,
+      "canonical_key": "Punisher",
+      "display_name": "Punisher",
+      "gep_character_name": "Punisher",
+      "role": "Duelist",
+      "aliases": []
+    },
+    "Bucky": {
+      "character_id": 39,
+      "canonical_key": "Bucky",
+      "display_name": "Bucky Barnes",
+      "gep_character_name": "Bucky",
+      "role": "Duelist",
+      "aliases": [
+        "Winter Soldier"
+      ]
+    },
+    "Wolverine": {
+      "character_id": 40,
+      "canonical_key": "Wolverine",
+      "display_name": "Wolverine",
+      "gep_character_name": "Wolverine",
+      "role": "Duelist",
+      "aliases": []
+    },
+    "Adam": {
+      "character_id": 41,
+      "canonical_key": "Adam",
+      "display_name": "Adam",
+      "gep_character_name": "Adam",
+      "role": "Strategist",
+      "aliases": []
+    },
+    "Cloak and Dagger": {
+      "character_id": 42,
+      "canonical_key": "Cloak and Dagger",
+      "display_name": "Cloak and Dagger",
+      "gep_character_name": "Cloak and Dagger",
+      "role": "Strategist",
+      "aliases": []
+    },
+    "Deadpool_Strat": {
+      "character_id": 43,
+      "canonical_key": "Deadpool_Strat",
+      "display_name": "Deadpool",
+      "gep_character_name": "Deadpool",
+      "role": "Strategist",
+      "aliases": []
+    },
+    "Gambit": {
+      "character_id": 44,
+      "canonical_key": "Gambit",
+      "display_name": "Gambit",
+      "gep_character_name": "Gambit",
+      "role": "Strategist",
+      "aliases": []
+    },
+    "Invisible Woman": {
+      "character_id": 45,
+      "canonical_key": "Invisible Woman",
+      "display_name": "Invisible Woman",
+      "gep_character_name": "Invisible Woman",
+      "role": "Strategist",
+      "aliases": []
+    },
+    "Jeff": {
+      "character_id": 46,
+      "canonical_key": "Jeff",
+      "display_name": "Jeff the Land Shark",
+      "gep_character_name": "Jeff",
+      "role": "Strategist",
+      "aliases": []
+    },
+    "Loki": {
+      "character_id": 47,
+      "canonical_key": "Loki",
+      "display_name": "Loki",
+      "gep_character_name": "Loki",
+      "role": "Strategist",
+      "aliases": []
+    },
+    "Luna": {
+      "character_id": 48,
+      "canonical_key": "Luna",
+      "display_name": "Luna",
+      "gep_character_name": "Luna",
+      "role": "Strategist",
+      "aliases": []
+    },
+    "Mantis": {
+      "character_id": 49,
+      "canonical_key": "Mantis",
+      "display_name": "Mantis",
+      "gep_character_name": "Mantis",
+      "role": "Strategist",
+      "aliases": []
+    },
+    "Rocket": {
+      "character_id": 50,
+      "canonical_key": "Rocket",
+      "display_name": "Rocket",
+      "gep_character_name": "Rocket",
+      "role": "Strategist",
+      "aliases": []
+    },
+    "Ultron": {
+      "character_id": 51,
+      "canonical_key": "Ultron",
+      "display_name": "Ultron",
+      "gep_character_name": "Ultron",
+      "role": "Strategist",
+      "aliases": []
+    },
+    "White Fox": {
+      "character_id": 52,
+      "canonical_key": "White Fox",
+      "display_name": "White Fox",
+      "gep_character_name": "White Fox",
+      "role": "Strategist",
+      "aliases": []
+    }
+  },
+  "alias_index": {
+    "angela": "Angela",
+    "captain america": "Captain America",
+    "deadpool_tank": "Deadpool_Tank",
+    "deadpool": "Deadpool_Strat",
+    "devil dinosaur": "Devil Dinosaur",
+    "doctor strange": "Doctor Strange",
+    "emma frost": "Emma Frost",
+    "groot": "Groot",
+    "hulk": "Hulk",
+    "magneto": "Magneto",
+    "peni parker": "Peni Parker",
+    "rogue": "Rogue",
+    "thing": "Thing",
+    "thor": "Thor",
+    "venom": "Venom",
+    "black cat": "Black Cat",
+    "black panther": "Black Panther",
+    "black widow": "Black Widow",
+    "blade": "Blade",
+    "daredevil": "Daredevil",
+    "deadpool_dps": "Deadpool_DPS",
+    "elsa": "Elsa",
+    "hawkeye": "Hawkeye",
+    "hela": "Hela",
+    "human torch": "Human Torch",
+    "iron fist": "Iron Fist",
+    "iron man": "Iron Man",
+    "magik": "Magik",
+    "mr fantastic": "Mr Fantastic",
+    "mister fantastic": "Mr Fantastic",
+    "moon knight": "Moon Knight",
+    "namor": "Namor",
+    "jean grey": "Jean Grey",
+    "phoenix": "Jean Grey",
+    "gan": "Jean Grey",
+    "gene": "Jean Grey",
+    "psylocke": "Psylocke",
+    "psylock": "Psylocke",
+    "sai": "Psylocke",
+    "sigh": "Psylocke",
+    "scarlet witch": "Scarlet Witch",
+    "spider-man": "Spider-Man",
+    "squirrel girl": "Squirrel Girl",
+    "star-lord": "Star-Lord",
+    "storm": "Storm",
+    "punisher": "Punisher",
+    "bucky": "Bucky",
+    "bucky barnes": "Bucky",
+    "winter soldier": "Bucky",
+    "wolverine": "Wolverine",
+    "adam": "Adam",
+    "cloak and dagger": "Cloak and Dagger",
+    "deadpool_strat": "Deadpool_Strat",
+    "gambit": "Gambit",
+    "invisible woman": "Invisible Woman",
+    "jeff": "Jeff",
+    "jeff the land shark": "Jeff",
+    "loki": "Loki",
+    "luna": "Luna",
+    "mantis": "Mantis",
+    "rocket": "Rocket",
+    "ultron": "Ultron",
+    "white fox": "White Fox"
+  },
+  "unresolved_gep_collisions": {
+    "Deadpool": {
+      "gep_character_name": "Deadpool",
+      "collides_with": [
+        "Deadpool_Tank",
+        "Deadpool_DPS",
+        "Deadpool_Strat"
+      ],
+      "resolution": "role-slot disambiguation at runtime; gated on GEP spike (Q-001/A3)."
+    }
+  }
+}

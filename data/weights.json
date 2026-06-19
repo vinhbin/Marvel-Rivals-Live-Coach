@@ -1,0 +1,68 @@
+{
+  "meta": {
+    "component": "Phase 0.4 — numeric weights + threat-weight formula (D-002, D-009).",
+    "purpose": "Single home for every constant the engine uses. 'No magic numbers in engine code' (PLAN Shared Contracts: Threat weight). The engine imports these; it never inlines a number.",
+    "principle": "Mechanics live in the KBs (durable). STRENGTH lives in the patch overlay (volatile). These weights are the durable MAPPING from KB signals -> a score; per-patch strength enters only via patch_trend_multiplier, which defaults to neutral (1.0) until the patch overlay is synced (Q-002).",
+    "formula_ref": "See threat_weight_formula and objective_formula below — both written out, per the 0.4 acceptance criterion.",
+    "compliance": "These weights drive PICK/SWAP scoring only. The counterability->weight map is a THREAT-priority signal, NOT a ban score (the ban machinery it superseded is quarantined in counter_kb _archival_do_not_use, D-004). The inverse of this ordering is never surfaced (D-006)."
+  },
+
+  "counterability_weight": {
+    "_doc": "How hard an enemy hero is to answer via a pick = how much THREAT priority it carries. LOW counterability => hard to answer => HIGH threat weight. This is the inverse of the old ban_value, repurposed as pick-priority (D-004).",
+    "low": 1.0,
+    "medium": 0.6,
+    "high": 0.35,
+    "conditional": 0.6
+  },
+
+  "conditional_resolution": {
+    "_doc": "counterability 'conditional' heroes (Moon Knight, Spider-Man, Squirrel Girl, Wolverine, Jeff) only count as covered if OUR pool can deliver a required mechanism (Phase 1.3). If the pool delivers it, treat as covered at full weight; if not, escalate toward the 'low' (hard) weight because it is effectively unanswered.",
+    "covered_weight": 0.6,
+    "uncovered_weight": 1.0
+  },
+
+  "patch_trend_multiplier": {
+    "_doc": "trend -> multiplier on a hero's threat weight. Comes from the patch overlay (Q-002). Until the overlay is synced, every hero is neutral (1.0). The engine multiplies counterability_weight by this. Range clamps prevent a single volatile patch signal from dominating durable mechanics.",
+    "strong_up": 1.5,
+    "up": 1.2,
+    "neutral": 1.0,
+    "down": 0.8,
+    "strong_down": 0.6,
+    "default": "neutral",
+    "clamp": { "min": 0.6, "max": 1.5 }
+  },
+
+  "playstyle_delta": {
+    "_doc": "raise/lower from comp_gap_model.playstyle_modifiers -> additive deltas on a comp-function's gap priority once an archetype is detected. Applied AFTER the base ideal-shortfall weight.",
+    "raise": 0.5,
+    "lower": -0.5
+  },
+
+  "function_gap_weight": {
+    "_doc": "Base weight of an UNFILLED comp function = ideal_providers shortfall x per_missing_provider, with a critical bonus when a function with ideal>=1 has ZERO providers (comp_gap_model.gap_rules.critical_gap).",
+    "per_missing_provider": 1.0,
+    "critical_zero_provider_bonus": 1.0,
+    "escalate_anti_dive_backline_bonus": 1.0
+  },
+
+  "objective_penalties": {
+    "_doc": "The negative terms of the D-009 constrained objective. Subtracted from a candidate pick/swap's score.",
+    "introduced_vulnerability": 0.8,
+    "clash_penalty": 0.7,
+    "redundancy_penalty": 0.4
+  },
+
+  "threat_weight_formula": {
+    "expression": "threat_weight(enemy_hero) = counterability_weight[counterability] * patch_trend_multiplier[trend]",
+    "conditional_note": "If counterability == 'conditional', substitute conditional_resolution.covered_weight or .uncovered_weight for the base, decided by Phase 1.3 pool-mechanism intersection, THEN multiply by trend.",
+    "worked_example": "Gambit: counterability=low -> 1.0; trend defaults neutral -> x1.0 => threat_weight 1.0 (highest tier). Black Widow: counterability=high -> 0.35; neutral => 0.35 (low priority; just counter-pick her)."
+  },
+
+  "objective_formula": {
+    "_doc": "D-009: single constrained objective, exhaustive over the comfort pool. NOT greedy set-cover. Maximize this score over every legal candidate (in pool, legal role slot, <=1 change); pick the max; emit Hold if no candidate clears the min_score gate.",
+    "expression": "score(candidate) = SUM[covered enemy threat_weight] + SUM[filled comp function_gap_weight (incl. crosswalk credit)] - introduced_vulnerability*(candidate's own countered_by present on enemy roster) - clash_penalty*(archetype clash) - redundancy_penalty*(over-provided function)",
+    "hard_constraints": ["candidate in comfort pool", "candidate fills a legal role slot", "<=1 change vs current comp in live mode"],
+    "hold_gate": "If max score < min_confident_score, emit Hold (D-006) rather than force a marginal pick.",
+    "min_confident_score": 0.5
+  }
+}
