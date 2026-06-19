@@ -19,4 +19,19 @@ export type {
   ScoreBreakdown,
   EngineNote,
 } from "./types.js";
-export type { LoadedKb, CanonicalKey, Role } from "./load.js";
+
+// Pure helpers + types the post-game coach (Phase 2.1) builds on, so it stays on the engine's
+// PUBLIC surface rather than reaching into internals. Export-only — no logic change.
+export { resolveName } from "./load.js";
+export { mechanismsProvidedBy } from "./conditional.js";
+export type {
+  LoadedKb,
+  CanonicalKey,
+  Role,
+  MechanismKey,
+  CompFunctionKey,
+  Counterability,
+  Resolution,
+  CounterEdge,
+  HeroCounterInfo,
+} from "./load.js";
