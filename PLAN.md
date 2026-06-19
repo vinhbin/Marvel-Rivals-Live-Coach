@@ -31,6 +31,38 @@ When two artifacts disagree, the higher one wins. Fix the LOWER artifact to matc
 
 ## Status snapshot (APPEND a new dated block on top each session; never overwrite the last one)
 
+### 2026-06-19 (Phase 3 platform-neutral slice COMPLETE) — GEP ingestion built + tested off-line; spike protocol ready for the user
+
+- ✅ **Phase 3 testable slice done (3.1 schema + 3.2 swaps/adapter), platform-NEUTRAL.** `src/gep/`
+  is three pure modules consuming synthetic/recorded payloads — no Overwolf API yet (Q-005 still
+  deferred, user's call). `npm run typecheck`, `npm run validate`, `npm test` (74/74) all green.
+- ✅ **The compliance boundary IS the schema (D-007), strip-to-whitelist (user decision).**
+  `parseRosterUpdate` parses loosely (tolerates GEP version drift) but PROJECTS to a narrow type with
+  ONLY the whitelisted fields — `ult_charge`, enemy `damage`/`healing`, and any future field are
+  DROPPED at the boundary; the engine literally cannot see them. A load-bearing test + the fuzz
+  assert no prohibited key survives. **Dedicated compliance review: CLEAN** across all 5 guardrails.
+- ✅ **Swap detection** (`detectSwaps`) diffs enemy `character_name` by `uid` (never index); a
+  `*****`→name transition is a REVEAL not a swap (the Q-001 case). **Adapter** (`toEngineInput`)
+  splits team/enemy by a SHARED `sideOf` rule and hands raw names to the engine (which already does
+  alias resolution + graceful degradation, D-012).
+- ✅ **Parallel review caught 3 real bugs, all TDD-fixed before commit:** (1) empty-uid players
+  collided in the diff map → phantom swaps (a phantom swap = a bogus re-pick — worst failure mode);
+  (2) duplicate-uid snapshots collapsed → phantom swaps; both now skipped as untrackable. (3)
+  `swaps.ts` and `adapter.ts` used DIFFERENT side rules → a player could be team to one and enemy to
+  the other; unified into one shared `sideOf`. Also de-duplicated the `MASK` predicate into a shared
+  `isMaskedName` (was defined twice) and closed 6 test gaps (empty/dup/number uid, named→masked,
+  all-masked round-trip, forced mode).
+- ✅ **Spike protocol shipped: `docs/gep-spike-protocol.md`** — the part only the USER can run. A
+  step-by-step for a REAL match to answer **Q-001** (when enemy `character_name` populates: draft vs
+  round_start) and **Q-006** (does `kill_feed` attribute the killer?). Uses `overwolf/events-sample-app`
+  (NOT the JarodWellinghoff repo). Results tables to paste back → then we wire live + decide
+  draft-time vs mid-match-only advice.
+- 🟡 **Two blockers remain the USER's, both live-gated (cannot be done in code):** run the spike
+  (Q-001/Q-006), and settle **Q-005** (native vs ow-electron) before any platform-specific listener.
+- 🟢 **Next:** user runs the spike → we finalize 3.2 live wiring against confirmed reality, then
+  Phase 5 (overlay) / Phase 6 (macro). README compliance one-liner (#6) still the last open
+  pre-deliver item.
+
 ### 2026-06-19 (Phase 2 COMPLETE) — post-game coach shipped; first engine consumer is live + tested
 
 - ✅ **Phase 2.1 done.** `src/postgame/` is a pure **projection** of the engine's `EngineResult`
@@ -178,8 +210,8 @@ Solo build — Owner column is "me" throughout; it stays so the format is ready 
 
 | # | Component | File(s) | Owner | Status | Deps | Notes |
 |---|-----------|---------|-------|--------|------|-------|
-| 3.1 | Confirm enemy roster + `selected_character` flow in the GEP Simulator; resolve `character_name` populate timing | spike notebook | me | ⬜ | 1.* | **Gated by Q-001.** Key off `character_id`/`character_name`, track by `uid` |
-| 3.2 | Swap detection: diff enemy `character_name` set → emit `swap(old,new,side)` into engine | `src/gep/*.ts` | me | ⬜ | 3.1 | - |
+| 3.1 | Confirm enemy roster + `selected_character` flow in a REAL match; resolve `character_name` populate timing | `docs/gep-spike-protocol.md` (+ `src/gep/schema.ts`) | me | 🟡 | 1.* | **Code done; live spike pending (Q-001).** Strip-to-whitelist GEP schema built + tested (compliance boundary, D-007). Timing answer needs a real match — protocol written for the user to run. Track by `uid` |
+| 3.2 | Swap detection: diff enemy `character_name` set → emit `swap(old,new,side)` into engine | `src/gep/swaps.ts`, `src/gep/adapter.ts` | me | 🟡 | 3.1 | **Pure logic done + tested** (`detectSwaps`, `toEngineInput`); reveal≠swap, by-uid, shared `sideOf`. Live wiring (feed swaps into a re-run) finalizes after the spike confirms timing |
 
 ### Phase 4 — Patch overlay sync  (the hidden swamp — protect with buffer)
 
@@ -289,12 +321,13 @@ Every cut is logged in `docs/decision-log.md`. No silent removal.
 
 > Decisions that block work. Resolve by research or by asking; never proceed on a silent assumption.
 
-- [ ] **Q-001 — When does enemy `character_name` first populate via GEP?** Draft / round_start / first-contact is **undocumented** (design §3). Gates Phase 3 and whether live advice is draft-time or mid-match only. **Must be tested in a REAL match — the GEP Simulator only confirms schema, not timing (research-refuted). Owner: me.**
+- [ ] **Q-001 — When does enemy `character_name` first populate via GEP?** Draft / round_start / first-contact is **undocumented** (design §3). Gates Phase 3 and whether live advice is draft-time or mid-match only. **Must be tested in a REAL match — the GEP Simulator only confirms schema, not timing (research-refuted). Protocol ready: `docs/gep-spike-protocol.md` §2. Owner: me (run the spike).**
 - [ ] **Q-002 — Stat/asset API ToS, rate limits, `x-api-key`, commercial/redistribution rights** (marvelrivalsapi.com). Gates Phase 4 (patch sync) + emblem assets. **Irrelevant for personal use per CLAUDE.md, but confirm before any sharing. Owner: me.**
 - [x] **Q-003 — Layer A research synthesis fold-in.** ✅ DONE 2026-06-19: confirmed data bugs A1-A4 + compliance vs official GEP page; refuted JarodWellinghoff scaffold / Simulator-tests-timing / compliant-by-construction. Folded into D-007..D-010 + this snapshot.
 - [ ] **Q-004 — Is the single-expert VOD counter KB good enough, and how is staleness handled?** Council + research flagged edge-count-as-signal bias + single-correlated-source. Mitigation: per-edge provenance + confidence tag (research refinement #8), `valid_for_patch` stamp, validate against own games. **Owner: me (revisit after golden fixtures exist).**
-- [ ] **Q-005 — Overwolf NATIVE vs ow-electron? — DEFERRED by decision (2026-06-19).** User chose to decide after the engine is proven (post Phase 1). Re-trigger at the Phase 2→3 boundary. ow-electron avoids the native "no private apps" wall + free hosting; native is lighter but needs email whitelisting + blocks private apps; GEP API differs (costly to switch). **Does NOT block Phase 0/1. Owner: YOU (revisit before Phase 3).**
-- [ ] **Q-006 — Does GEP `kill_feed` attribute the KILLER (character_name / mappable uid) next to the victim?** Gates macro reads #1/#2 (Phase 6.2); read #3 (tempo) ships regardless. **Test in the same real-match spike as Q-001. Owner: me.**
+- [ ] **Q-005 — Overwolf NATIVE vs ow-electron? — STILL DEFERRED (re-confirmed 2026-06-19 at Phase 3).** User chose again to defer and build only platform-NEUTRAL Phase 3 parts (`src/gep/` imports no Overwolf API). ow-electron avoids the native "no private apps" wall + free hosting; native is lighter but needs email whitelisting + blocks private apps; GEP API differs (costly to switch). **Blocks ONLY the platform-specific listener shim (the thing that feeds `src/gep/`). Owner: YOU (settle before writing the listener).**
+- [ ] **Q-006 — Does GEP `kill_feed` attribute the KILLER (character_name / mappable uid) next to the victim?** Gates macro reads #1/#2 (Phase 6.2); read #3 (tempo) ships regardless. **Test in the same real-match spike as Q-001. Protocol ready: `docs/gep-spike-protocol.md` §3. Owner: me.**
+  - ⚠️ **Compliance watch-item (review note, Phase 3):** the Phase-3 GEP boundary deliberately STRIPS teammate `ult_charge` entirely. When the macro/tempo layer (Phase 6.1) is wired to live GEP it will need its OWN narrowly-scoped `ult_charge` ingestion path that enforces `is_teammate === true` at the point of consumption — do NOT relax the strict exclusion in `src/gep/schema.ts`; add a separate guarded path.
 
 ---
 
@@ -311,4 +344,4 @@ Every cut is logged in `docs/decision-log.md`. No silent removal.
 
 ---
 
-_Last updated: 2026-06-19 (Phase 2 complete — post-game coach shipped; C3 met; next = Phase 3 GEP spike) by me._
+_Last updated: 2026-06-19 (Phase 3 platform-neutral slice complete — GEP ingestion built + tested; spike protocol ready for the user; next = run the live spike) by me._
