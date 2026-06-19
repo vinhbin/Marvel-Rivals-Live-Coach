@@ -16,7 +16,7 @@
     "hard_cc":            ["anti_dive_peel", "burst_pick"],
     "displacement":       ["anti_dive_peel"],
     "brawl":              ["frontline_space"],
-    "zone_denial":        ["zone_wall", "anti_dive_peel"],
+    "zone_denial":        ["zone_wall"],
     "wall_break":         ["zone_wall"],
     "contest_vertical":   ["zone_wall", "anti_flyer_grounding"],
     "grounding":          ["anti_flyer_grounding"],
