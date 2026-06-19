@@ -64,25 +64,28 @@ export const GOLDEN: GoldenFixture[] = [
     expect: { kind: "pick", acceptableHeroes: ["Thing", "Devil Dinosaur"] },
   },
   {
-    name: "Gambit (low counterability, highest threat) pulls the pick toward a hero that answers him",
+    name: "Gambit (low counterability, highest threat) into triple-support steers to Magneto",
     rationale:
-      "Gambit is the top-tier threat (counterability=low => weight 1.0). With an open comp, the pick " +
-      "should favour a pool hero that BOTH fills a gap and answers Gambit. Magneto (ult_turnaround) and " +
-      "Punisher both answer him and fill poke/frontline gaps; either is acceptable.",
+      "Gambit is the top-tier threat (counterability=low => weight 1.0). Against a support-heavy enemy " +
+      "(Gambit + Luna + Doctor Strange), Magneto is the clear pick over Punisher (dev-confirmed): his " +
+      "ult_turnaround both denies Gambit's ult AND can cancel the enemy healer ult, while Punisher only " +
+      "farms/poke-pressures. The engine ranks Magneto first.",
     input: {
       enemy: ["Gambit", "Luna", "Doctor Strange"],
       team: ["Hela", "Spider-Man"],
       comfortPool: ["Magneto", "Punisher"],
       mode: "pick",
     },
-    expect: { kind: "pick", acceptableHeroes: ["Magneto", "Punisher"] },
+    expect: { kind: "pick", hero: "Magneto" },
   },
   {
     name: "permaflyer enemy steers the pick toward grounding/hitscan",
     rationale:
       "Human Torch + Storm + Iron Man is a flyer-heavy enemy. The comp lacks anti-flyer grounding. " +
       "Punisher (hitscan, anti_flyer_grounding declared) is the right answer over Mantis (a 2nd healer " +
-      "the team doesn't yet need as urgently as grounding).",
+      "the team doesn't yet need as urgently as grounding). Dev note: ANY hitscan answers flyers — the " +
+      "engine surfaces the wider pool correctly (e.g. Jean Grey ranks just below via her hitscan " +
+      "crosswalk; Hela ties Punisher). A dedicated hitscan DPS is the cleaner answer, hence Punisher here.",
     input: {
       enemy: ["Human Torch", "Storm", "Iron Man", "Luna"],
       team: ["Doctor Strange", "Hulk", "Luna"],
