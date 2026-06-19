@@ -31,6 +31,16 @@ When two artifacts disagree, the higher one wins. Fix the LOWER artifact to matc
 
 ## Status snapshot (APPEND a new dated block on top each session; never overwrite the last one)
 
+### 2026-06-19 (Phase 1 COMPLETE) — engine + golden fixtures green; critical path cleared
+
+- ✅ **Phase 1 done (1.1–1.4).** `src/engine/` is a plain-TS constrained-objective engine (D-009, NOT greedy set-cover) over the validated KBs; emits `Pick | Swap | Hold` (D-006). `npm run typecheck`, `npm run validate`, and `npm test` (16/16) all green.
+- ✅ **1.1 core** — load+validate KBs (engine refuses drifted data), threat tagging + weighting, comp coverage/archetype/gap weighting, the D-009 per-candidate objective, exhaustive search over the comfort pool under the 2-2-2 role queue (D-012). Swap is scored on NET change (debits the outgoing hero's vacated role).
+- ✅ **1.3 conditional resolution** — a `conditional` enemy is "answered" only if team∪pool delivers a mechanism in its `countered_by`.
+- ✅ **1.4 graceful degradation** — masked/unknown/ambiguous (incl. Deadpool A3) names count toward roster size, are skipped for tagging, and each surfaces a note; sub-gate best → Hold; never throws (proven by a fuzz invariant).
+- ✅ **1.2 golden fixtures + invariants (D-005)** — 8 hand-judged rosters → expected suggestion, plus 8 property invariants (never-a-ban, pick∈pool, 2-2-2 respected, swap never reduces covered-threat-weight, mechanism∈vocab, A4 parity, never-throws). **Building the engine surfaced + fixed two real bugs before fixtures (function-fill over-credit 11→3 via declared/crosswalk split + cap; swap net-change), and the fuzz caught a third (over-strict role-slot assertion).** This is D-005 working as designed.
+- ✅ **Pre-deliver checklist items 2–5 now pass** (was only #1 after Phase 0). Only #6 (README compliance one-liner) outstanding — README not written yet.
+- 🟢 **Next: Phase 2 — post-game coach** (first consumer of the engine; lowest-risk, no live edge cases). Q-005 (platform) re-triggers at the Phase 2→3 boundary; Q-001/Q-006 (GEP timing, kill-feed) still need a real match. Weights tuning (the deferred 🟡 from Phase 0) is now judgeable against live engine output + the golden fixtures.
+
 ### 2026-06-19 (Phase 1 start) — engine semantics settled (D-012); building 1.1→1.4→1.3→1.2
 
 - ✅ **Three engine design choices locked with the user before any code (D-012).** Plan left them open; resolved per the "no silent assumption" discipline:
@@ -110,10 +120,10 @@ Solo build — Owner column is "me" throughout; it stays so the format is ready 
 
 | # | Component | File(s) | Owner | Status | Deps | Notes / acceptance |
 |---|-----------|---------|-------|--------|------|--------------------|
-| 1.1 | TS set-cover engine: tag enemy threats, check coverage, compute gaps, recommend from comfort pool | `src/engine/*.ts` | me | ⬜ | 0.* | Implements `comp_gap_model` `recommendation_logic.steps`; output type `Pick \| Swap \| Hold` (D-006) |
-| 1.2 | Golden-fixture test set (~6–10 hand-entered rosters → expected suggestion) | `test/fixtures/*.ts` | me | ⬜ | 1.1 | Measurable oracle for "good advice" (D-005); gates patch edits |
-| 1.3 | Conditional-counterability resolution (Moon Knight / Wolverine / Jeff need a deliverable mechanism from the pool) | `src/engine/conditional.ts` | me | ⬜ | 1.1, 0.3 | A "conditional" counter only counts as covered if the pool can deliver the mechanism |
-| 1.4 | Graceful degradation: unknown `character_name`, masked names, partial roster, no-good-suggestion → `Hold` | `src/engine/*.ts` | me | ⬜ | 1.1 | Never crashes, never silently under-covers (SRE finding) |
+| 1.1 | TS engine: tag enemy threats, check coverage, compute gaps, recommend from comfort pool | `src/engine/*.ts` | me | ✅ | 0.* | DONE. Constrained-objective exhaustive search (D-009); output `Pick \| Swap \| Hold` (D-006); both pick+swap modes (D-012). 2-2-2 role queue enforced |
+| 1.2 | Golden-fixture test set (~6–10 hand-entered rosters → expected suggestion) | `test/fixtures/*.ts`, `test/engine.test.ts` | me | ✅ | 1.1 | DONE. 8 golden fixtures + 8 property invariants (D-005, refinement #7); `npm test` green (16/16). Fuzz caught a real over-strict assertion bug |
+| 1.3 | Conditional-counterability resolution (Moon Knight / Wolverine / Jeff need a deliverable mechanism from the pool) | `src/engine/conditional.ts` | me | ✅ | 1.1, 0.3 | DONE. Conditional covered iff (team∪pool) provides a mechanism in the hero's `countered_by`; covered/uncovered weight from `conditional_resolution` |
+| 1.4 | Graceful degradation: unknown `character_name`, masked names, partial roster, no-good-suggestion → `Hold` | `src/engine/*.ts` | me | ✅ | 1.1 | DONE. Unknown/masked/ambiguous count toward roster size, skipped for tagging, each surfaced as a note; never throws; Hold below the confidence gate. Verified by fuzz invariant |
 
 ### Phase 2 — Post-game coach (first consumer of the engine)
 
@@ -250,12 +260,12 @@ Every cut is logged in `docs/decision-log.md`. No silent removal.
 "Deliver" here = trust it in your own ranked games. All must pass:
 
 1. [x] Every KB validates against the registry with zero unknown tokens (`npm run validate` green). ✅ Phase 0.
-2. [ ] Engine passes 100% of the golden fixtures (D-005).
-3. [ ] Engine output type cannot represent a ban; grep confirms no ban field is serialized (D-006).
-4. [ ] Engine consumes ONLY the whitelisted GEP fields (Shared Contracts) — no enemy dmg/healing/ult_charge anywhere.
-5. [ ] Graceful `Hold` on unknown/masked/partial rosters — no crash, no silent under-cover.
-6. [ ] Compliance one-liner visible in README: "GEP-only, no injection, no confidential data."
+2. [x] Engine passes 100% of the golden fixtures (D-005). ✅ Phase 1 — `npm test` 16/16 (8 golden + 8 invariants).
+3. [x] Engine output type cannot represent a ban; grep confirms no ban field is serialized (D-006). ✅ No `Ban` variant in the union; a runtime invariant asserts no `ban`/`"kind":"ban"` is serialized over all fixtures + fuzz; engine-source grep is clean.
+4. [x] Engine consumes ONLY the whitelisted GEP fields (Shared Contracts) — no enemy dmg/healing/ult_charge anywhere. ✅ Engine keys off canonical hero keys + static KB tiers only; grep confirms no `ult_charge`/enemy-stat reference. (Re-confirm at the GEP spike when live fields are wired — D-007.)
+5. [x] Graceful `Hold` on unknown/masked/partial rosters — no crash, no silent under-cover. ✅ Phase 1.4; verified by the never-throws fuzz invariant.
+6. [ ] Compliance one-liner visible in README: "GEP-only, no injection, no confidential data." (README not written yet.)
 
 ---
 
-_Last updated: 2026-06-19 (Phase 0 data review — tags dev-validated, engine cleared to start) by me._
+_Last updated: 2026-06-19 (Phase 1 complete — engine + golden fixtures green; critical path cleared) by me._
