@@ -31,6 +31,15 @@ When two artifacts disagree, the higher one wins. Fix the LOWER artifact to matc
 
 ## Status snapshot (APPEND a new dated block on top each session; never overwrite the last one)
 
+### 2026-06-19 (Phase 1 data review) — dev-validated the engine oracle; Phase 2 cleared to start
+
+- ✅ **Dev game-knowledge review of the Phase 1 oracle** (the D-005 soft risk: fixtures + tags encode the agent's read, not the dev's). Outcome: **data was sound** — all 8 golden fixtures and the fixture-driving `hero_functions` tags confirmed by the dev, with two refinements committed (`test(fixtures):`):
+  - Fixture 4 (Gambit vs triple-support): tightened "Magneto OR Punisher" → **expect Magneto** (dev: his `ult_turnaround` denies Gambit's ult AND cancels the enemy healer ult; Punisher only farms/pokes). Engine already ranked Magneto first.
+  - Fixture 5 (flyers): recorded the dev note that **any hitscan answers flyers**; verified the engine surfaces the wider pool via the hitscan→anti_flyer crosswalk (Jean Grey ranks just below Hela/Punisher on partial credit — dev confirmed she's a notch below a dedicated hitscan, so NO declared anti_flyer tag added). The crosswalk-partial design is doing exactly what it should.
+  - Tags confirmed: Luna IS a real anti-dive (freeze + 1v1), Mantis/Thing/Punisher/Ultron/Scarlet Witch/Mr Fantastic/Human Torch all correct. Weights: dev deferred numeric tuning to the engine (tune against live output).
+- 🟡 **Partial review (acceptable).** Only the ~10 fixture-driving + Phase-0-corrected tags were dev-checked individually; the other ~42 heroes' `hero_functions` are zod-CONSISTENT but not individually dev-verified for COMPLETENESS. Acceptable risk: a wrong/incomplete tag now surfaces as visibly bad advice in the post-game coach (Phase 2), which IS the review surface. Revisit opportunistically as real matches expose tags.
+- ✅ **Phase 2 readiness: CLEARED.** The oracle the post-game coach will display is dev-trusted. Dev chose **full review now + full post-game review scope** (PLAN.md 2.1 / design §6 mode 2).
+
 ### 2026-06-19 (Phase 1 COMPLETE) — engine + golden fixtures green; critical path cleared
 
 - ✅ **Phase 1 done (1.1–1.4).** `src/engine/` is a plain-TS constrained-objective engine (D-009, NOT greedy set-cover) over the validated KBs; emits `Pick | Swap | Hold` (D-006). `npm run typecheck`, `npm run validate`, and `npm test` (16/16) all green.
@@ -268,4 +277,4 @@ Every cut is logged in `docs/decision-log.md`. No silent removal.
 
 ---
 
-_Last updated: 2026-06-19 (Phase 1 complete — engine + golden fixtures green; critical path cleared) by me._
+_Last updated: 2026-06-19 (Phase 1 data review — oracle dev-validated; Phase 2 cleared) by me._
