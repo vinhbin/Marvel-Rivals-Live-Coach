@@ -1,0 +1,83 @@
+{
+  "meta": {
+    "component": "4 of 4 — Macro / event-stream reader (the 'matchup + tempo' layer)",
+    "siblings": ["rivals_counter_kb.json", "rivals_comp_gap_model.json", "ult-combo table (todo)"],
+    "purpose": "Turn the live GEP event stream (kill_feed, death, roster, ult_charge) into three coaching reads: (1) personal nemesis, (2) team-level threat, (3) stagger/tempo. This is the 'help you PLAY' layer none of the competitors occupy — they coach the draft, not the fight.",
+    "compliance": "Your-side / on-screen data only. Your deaths, your team's deaths, your team's ult_charge. Killer identity comes from the in-game kill feed (public, on-screen) — not a confidential stat. No enemy confidential stats, no ult prediction, no bans.",
+    "philosophy": "Repositions the product from opponent-scouting toward self-improvement coaching. Safer compliance posture AND a genuinely unoccupied niche."
+  },
+
+  "BUILD_GATING_UNKNOWN": {
+    "question": "Does the GEP `kill_feed` event attribute the KILLER (character_name or a uid you can map via roster) alongside the victim?",
+    "why_it_matters": "Reads #1 (personal nemesis) and #2 (team threat) REQUIRE killer attribution. If kill_feed only reports the victim, those two reads are NOT buildable as designed.",
+    "fallback_if_no_killer": "Read #3 (stagger/tempo) still works — it needs only death timestamps + is_alive + ult_charge, no killer. So even worst case, the tempo layer ships.",
+    "action": "Confirm the kill_feed payload shape FIRST in the GEP Simulator / data spike, before building #1 and #2. This is the single load-bearing unknown for this component."
+  },
+
+  "inputs_from_gep": {
+    "kill_feed": "victim, killer (UNCONFIRMED — see BUILD_GATING_UNKNOWN), timestamp",
+    "death": "death events with timestamp (per player)",
+    "roster_xx": "uid, character_name, is_teammate, is_local, is_alive, ult_charge (teammates only)",
+    "round_events": "round_start / round_end for windowing",
+    "not_available": "NO player coordinates — positioning is INFERRED from death patterns, never actual location."
+  },
+
+  "fight_segmentation": {
+    "comment": "Several reads operate per fight. Derive fights from death clustering since there's no explicit 'fight' event.",
+    "heuristic": "Deaths within a sliding ~10s window belong to the same fight; a gap > ~12s starts a new fight.",
+    "status": "DEFAULT heuristic — tune against real games; numbers are starting points, not gospel."
+  },
+
+  "reads": {
+    "1_personal_nemesis": {
+      "logic": "Tally, per enemy character_name, the kills on YOU (is_local victim). Surface when one crosses a threshold within the active window.",
+      "window": "Per-round or rolling-recent — NOT cumulative over the whole match. A mid-game fix changes the pattern, so old deaths must decay out.",
+      "threshold_default": ">=3 kills by the same enemy hero on you within a round, OR >=50% of your recent deaths from one hero.",
+      "enrich_with": "counter_kb — look up that hero's matchup advice so the output is COACHING, not a stat.",
+      "output_template": "'{hero} has killed you {n} times this round.' + counter_kb mechanical tip, e.g. 'He's fragile and telegraphed — punish him mid-combo, save your stun for his ult.'",
+      "why_novel": "Players FEEL like one flanker keeps getting them but don't know it's 5 of 7. Invisible otherwise; no stats tool surfaces it."
+    },
+
+    "2_team_threat": {
+      "logic": "Tally, per enemy character_name, kills on your WHOLE team (is_teammate side). If one enemy hero is farming multiple teammates / your backline, it's a team problem, not a you-problem.",
+      "threshold_default": ">=4 kills on your team by one enemy hero within a round, spread across >=2 different victims.",
+      "cross_ref": "comp_gap_model — if the threat's archetype (e.g. dive_flank) matches an uncovered function in YOUR comp (e.g. anti_dive_peel == 0), the read becomes a coverage-gap diagnosis.",
+      "output_template": "'Their {hero} has {n} kills on your backline — your comp has no anti-dive. Someone peel, or swap to {pick from user pool that provides anti_dive_peel}.'",
+      "disambiguation_note": "Same raw data as #1 but a DIFFERENT lesson. #1 = your duel/positioning. #2 = team coverage. The split is decided by victim spread + comp_gap cross-ref."
+    },
+
+    "3_stagger_tempo": {
+      "stagger": {
+        "logic": "Within a fight, examine YOUR team's death timestamps. Spread-out deaths = trickling in one at a time (the #1 macro leak below GM).",
+        "signal_default": "Median inter-death gap among your team's deaths in a fight > ~4s AND deaths span > ~10s -> staggering.",
+        "output_template": "'You're trickling in — group up before the next engage.'",
+        "caveat": "Clustered deaths aren't automatically good (could be a wipe). Tune to distinguish even trade vs trickle."
+      },
+      "ult_tempo": {
+        "logic": "From teammate ult_charge + is_alive: detect collective power spike vs ult starvation.",
+        "spike_default": ">=3 teammate ults ready (>=95%) AND >=5 alive -> 'Your fight — force it now.'",
+        "starved_default": "<=1 ult across the team after a lost fight -> 'Ult-starved — stall and regroup, don't contest this one.'",
+        "note": "Pure your-side data. Never references enemy ult state."
+      },
+      "first_death": {
+        "logic": "Per fight, record who on your side died FIRST and to which enemy hero. Aggregate over the match.",
+        "output_mode": "post-game",
+        "output_template": "'You died first in {x}/{y} fights' / 'Their {hero} got the opening pick on you {n} times — respect that angle.'"
+      }
+    }
+  },
+
+  "output_modes": {
+    "live_glanceable": "Short callouts only — nemesis alert, stagger warning, tempo window. Fits the live overlay tier (deterministic, instant).",
+    "post_game_llm": "Full pattern narrative via the LLM layer — 'Spider-Man killed you 5x in rounds 1-2, then you adjusted'; first-death trends; coverage diagnoses. Runs on the slow post-game moment, not mid-fight."
+  },
+
+  "thresholds_note": "All numeric thresholds are tunable defaults. Expose them in config; tune against your own games + rank data. Don't ship them as fixed.",
+
+  "caveats": [
+    "kill_feed killer attribution is UNCONFIRMED — gates reads #1 and #2 (see BUILD_GATING_UNKNOWN).",
+    "No coordinates in GEP — all positioning is inferred from death patterns, not real location. Don't claim spatial precision.",
+    "Fight segmentation and all thresholds are heuristics to validate, not verified constants.",
+    "Keep any tilt/queue-discipline nudges light and non-clinical — a nudge, not a diagnosis."
+  ]
+}

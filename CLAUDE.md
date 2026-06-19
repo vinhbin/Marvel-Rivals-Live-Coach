@@ -44,8 +44,13 @@ one engine + types across overlay and any backend).
 - `docs/design.md` — full system design (compliance, GEP schema, UX, risks, stack).
 - `data/counter_kb.json` — enemy hero → counters (counterability graph).
 - `data/comp_gap_model.json` — comp function coverage → pick/swap advice.
+- `data/macro_reader.json` — live event-stream → coaching reads (nemesis / team-threat / tempo). The "play" layer (D-008).
 - `data/ult_combo_table.json` — synergistic ult pairs. **TODO: not written yet.**
 - `data/patch_overlay.json` — per-patch hero strength (L2). **TODO: sync from stat API.**
+
+> Planning state lives in `PLAN.md` (phases, contracts, open questions) and `docs/decision-log.md`
+> (D-001…D-010). Read those before building. **Engine optimization is a constrained objective +
+> exhaustive search, NOT greedy set-cover** (D-009) — the "set-cover" language below predates that.
 
 ## Architecture (4 layers)
 

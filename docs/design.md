@@ -123,8 +123,11 @@ answerable and dive-resistant"; that stays true across patches.
 - Names masked for D3+ until round start (hidden-name opt-out persists). **Key off
   `character_name`, never identity** — keeps you compliant *and* immune to name masking.
 - **Unverified timing:** exactly when enemy `character_name` first populates across draft →
-  round-start → swap → reconnect is NOT documented. Resolve empirically in the GEP Simulator
+  round-start → swap → reconnect is NOT documented. Resolve empirically **in a REAL match**
   before building the live UX — it determines whether you advise during draft or only post-lock.
+  > **CORRECTION (2026-06-19, Layer A research, see PLAN.md Q-001):** the GEP **Simulator
+  > cannot answer this** — it requires the game running and only confirms *schema*, not *timing*.
+  > Must be tested live. Same spike also resolves Q-006 (does `kill_feed` attribute the killer?).
 - Swap detection = diff the enemy side's `character_name` set on each `selected_character` /
   `roster_xx` update; emit `swap(old, new, side)` into the engine.
 
@@ -272,7 +275,7 @@ Don't split the stack.
 | Engine | Plain TS set-cover module | Consumes the 3 KB JSONs (bundled). No lib needed. `zod` to validate KB shapes + GEP payloads. |
 | Knowledge base | 3 JSONs + patch overlay JSON | counter graph, comp-gap, ult-combo (todo), patch overlay (§5). |
 | Stat + asset API | marvelrivalsapi.com (`x-api-key`) | Per-patch win/ban rates (L2) + hero emblem images. |
-| Build / tooling | Vite + npm/yarn, Overwolf CLI | Scaffold from the community sample `JarodWellinghoff/marvel-rivals-tracker` (TS-on-GEP). |
+| Build / tooling | Vite + npm/yarn, Overwolf CLI | ~~Scaffold from `JarodWellinghoff/marvel-rivals-tracker`~~ **CORRECTED (2026-06-19): that repo is a no-React webpack skeleton — wrong stack. Use `overwolf/events-sample-app` as the GEP reference. Platform (native vs ow-electron) is OPEN — see PLAN.md Q-005 / D-010.** |
 
 **Architectural fork — backend or not (gated on personal vs published):**
 

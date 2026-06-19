@@ -25,13 +25,30 @@ told to *falsify* a load-bearing claim, not confirm it (GEP roster schema + enem
 `character_name` timing; the compliance boundary; engine-quality risk; Overwolf platform/stack
 risk), then a synthesis pass.
 
-**Status:** <!-- RESEARCH-SYNTHESIS-SLOT -->
-Recon + fact-check agents completed; structured synthesis was still finalizing at the time of
-writing. Findings to be folded into PLAN.md **Open Questions** and the decision log when the
-synthesis lands. The design doc (`design.md` §0, §8) already carried a verified compliance
-murder-board and a competitor read (DeepRivals as the direct competitor; tracker.gg as the
-incumbent), so this phase is **confirmatory** of an already-assessed lane rather than the
-load-bearing phase for a personal build.
+**Status: COMPLETE (2026-06-19).** Key results:
+- **Confirmed against primary sources** (Overwolf's official GEP page + changelog): enemy
+  damage/healing absent from the schema; `ult_charge` teammate-only (changelog v292.1.1
+  "Disabled ult_charge in roster for enemy players"); `selected_character` since GEP 296.0;
+  `banned_characters` since 281.0 (and it includes `is_teammate` for both teams — the one
+  field needing self-discipline). The 3 NetEase prohibitions are stated on Overwolf's own dev
+  page. Blitz was banned for injection + the 3 feature categories.
+- **Independently confirmed all 4 data bugs against the files** (A1: 13 declared vs 32 used
+  mechanisms; A2: "Gan"=Jean alias used as a counter node; A3: Deadpool split + zero Deadpool
+  entries in comp_gap; A4: 13 KB heroes missing from `hero_functions`).
+- **Competitive lane (honest):** GEP-only compliant counter advice is **table stakes, not a
+  moat** — Counterwatch is a sophisticated incumbent (50/30/20 counter/synergy/map, Bayesian-
+  shrunk win rates). BUT it *explicitly excludes* personal pool and comp-composition as inputs,
+  so the **pool-aware + comp-gap-as-set-cover intersection IS unoccupied.** For a personal
+  build the lane barely matters; recorded for honesty.
+- **Refuted, with consequences:** "compliant-by-construction" → downgraded to "by-current-
+  schema + discipline" (D-007); the JarodWellinghoff scaffold (design §9) is a no-React webpack
+  skeleton → use `overwolf/events-sample-app` (D-003 update); the **GEP Simulator cannot test
+  the `character_name` timing** — only schema → Q-001 needs a real match (D-003 update).
+- **Ban-risk nuance:** Blitz users got amnesty (no bans) if they stopped, but real multi-year
+  bans hit other *injecting* software (SteelSeries GG + Process Hacker) → GEP-only is the
+  *survivable* architecture. Residual personal risk LOW-not-zero; no written safe-harbor.
+
+Folded into decision log D-007…D-010 and PLAN.md Open Questions.
 
 ---
 
@@ -97,8 +114,30 @@ The murder-board did not surface a *fatal* flaw — it surfaced a **mandatory se
 
 ## Phase 5 — Gap analysis
 
-<!-- GAP-ANALYSIS-SLOT — final adversarial pass for the one objection not yet addressed,
-     run after the research synthesis is folded in. -->
+The Layer A research workflow doubled as the gap-analysis pass — it surfaced the objections the
+murder-board did NOT, by checking the design against primary sources and the data against itself:
+
+1. **The engine objective is wrong, not just the data.** Greedy set-cover maximizes
+   threats-covered-per-pick *blind to comp coherence* — it will "spam pick Thing" (covers the
+   most nodes) and recommend throw picks the user can't execute or that lose to the rest of the
+   enemy comp. → **D-009:** replace with a single constrained objective (`+threat +function
+   −introduced_vulnerability −clash −redundancy`, hard-constrained to pool ∩ legal slot ∩ ≤1
+   change) + exhaustive search (trivial at ~52 heroes). This is the single most important catch
+   the council missed.
+2. **The GEP Simulator can't validate the load-bearing timing unknown** — it needs the game
+   running and only confirms schema. Q-001 (and Q-006) must be tested in a real match.
+3. **The recommended scaffold is the wrong stack** — use `overwolf/events-sample-app`.
+4. **Platform choice is a real decision, not a default** — native vs ow-electron has a genuine
+   personal-build tradeoff (approval wall + private-app block vs overlay weight; divergent GEP
+   APIs). → Q-005, escalated to the user.
+5. **The 4th KB (`macro_reader`) introduced a new compliance edge** — vetted separately:
+   SAFE-WITH-FRAMING-CONSTRAINT (kill tally = internal trigger only, self-directed coaching
+   only) + a 2nd build-gating GEP unknown (Q-006). → **D-008.**
+
+**The one objection a knowledgeable critic would still raise, now addressed:** "your engine will
+LOOK trustworthy long before it IS" — caught and answered by D-005 (golden fixtures + property
+invariants as the oracle) + D-009 (kill the throw-pick pathology) + D-008's confidence/provenance
+tagging (Q-004).
 
 ---
 

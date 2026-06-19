@@ -6,6 +6,114 @@ decision without escalation.
 
 ---
 
+## 2026-06-19  D-010: Platform choice (Overwolf native vs ow-electron) is an OPEN user decision — do not default to native
+
+**Decision.** Do NOT scaffold yet. The Layer A research refuted the assumption that native is
+the obvious choice. For a personal/unlisted build, `ow-electron` avoids the native "no private
+apps" approval wall (native requires email whitelisting before any local run and blocks private
+apps) and lets you host/share freely; native is lighter-weight for a glanceable overlay. The GEP
+consumer API **differs** between them (`overwolf.games.events` vs the ow-electron GEP package),
+so switching later is costly. **This is a tradeoff for the user to decide, not the agent.**
+Parked as Q-005.
+
+**Rationale.** Refinement #10 from the research synthesis. The design doc §9 leaned native
+("native is confirmed today"); the research surfaced that the approval wall + private-app block
+materially affect a personal build, and the API divergence makes the choice expensive to defer.
+
+**Scope.** Blocks Phase 3+ (any Overwolf scaffolding). Does NOT block Phase 0/1 (the engine is
+platform-agnostic plain TS — build it regardless).
+
+**Cross-references.** design.md §9; PLAN.md Q-005; research synthesis refinement #10.
+
+---
+
+## 2026-06-19  D-009: Replace dual greedy set-cover with a single constrained objective + exhaustive search
+
+**Decision.** The engine is NOT greedy set-cover. It scores every candidate swap from the
+comfort pool with a single objective: `+covered_threat_weight +filled_comp_function_weight
+−introduced_vulnerability −clash_penalty −redundancy_penalty`, subject to hard constraints
+(∈ comfort pool, legal role slot, ≤1 change in live mode), and picks the max. With ~52 heroes
+and a small comfort pool this is a trivial **exhaustive** search — no greedy approximation.
+`introduced_vulnerability` cross-references the candidate's OWN `countered_by` against the enemy
+comp, so the engine never recommends a pick whose counters are already on the enemy roster
+without flagging it.
+
+**Rationale.** The research's `highest_risk` finding: greedy set-cover maximizes
+threats-covered-per-pick *blind to comp coherence* — it will "spam 'pick Thing' because Thing
+covers the most nodes," recommending throw picks the user can't execute or that lose to the rest
+of the enemy comp. This **supersedes the implicit "set-cover is the right primitive" assumption
+in D-002**: the join + weights from Phase 0 still stand, but the optimization is a constrained
+objective, not greedy cover. Pool membership ≠ proficiency — gate candidates on an
+execution/proficiency score too.
+
+**Scope.** The engine's optimization core (Phase 1). Phase 0's registry/crosswalk/weights are
+unchanged inputs.
+
+**Alternatives considered.** Greedy set-cover (CLAUDE.md / design §4) — rejected: throw-pick
+pathology, no coherence awareness. Exhaustive is cheap at this scale.
+
+**Cross-references.** research synthesis `highest_risk` + refinement #6; supersedes the
+algorithm assumption in D-002; CLAUDE.md "Engine contract" (the "weighted set-cover" language
+should be read as "weighted constrained selection").
+
+---
+
+## 2026-06-19  D-008: Integrate macro_reader.json (4th KB) as the live "play" layer; reads gated + framing-constrained
+
+**Decision.** Adopt `data/macro_reader.json` as the 4th knowledge base — a macro/event-stream
+reader producing three coaching reads from the live GEP stream: (1) personal nemesis, (2) team
+threat, (3) stagger/tempo. Sequencing: read #3 (stagger/tempo) is built FIRST among the macro
+reads (pure your-side data, compliant-by-construction, no gating unknown); reads #1/#2 are gated
+on confirming `kill_feed` killer attribution (Q-006). Compliance verdict:
+**SAFE-WITH-FRAMING-CONSTRAINT** — the kill-feed input is public/GEP-sourced, but a per-enemy
+kill tally IS a derived enemy stat, so the engine treats it as an **internal trigger signal
+only** and renders ONLY self-directed coaching (advice about YOUR play / a swap from YOUR pool),
+never an enemy scoreboard and never an "enemy-targeting / shut down hero X" instruction.
+
+**Rationale.** Adversarial vetting (2026-06-19) against CLAUDE.md + design §0/§3. The reads
+reposition the product toward self-improvement coaching — a safer compliance posture AND a
+genuinely unoccupied niche (the research confirms competitors coach the draft, not the fight).
+`ult_charge` is teammate-only in three doc places, so the tempo read cannot cross prohibition #3.
+
+**Scope.** A live-event consumer → sits in the GEP/live phases (3+), behind the engine. Read #3
+can be prototyped on recorded/synthetic event streams earlier.
+
+**Cross-references.** data/macro_reader.json; CLAUDE.md guardrails; design §0/§3/§6/§7; PLAN.md
+Q-006; new framing constraint belongs in design §0's keep/kill table.
+
+---
+
+## 2026-06-19  D-007: Compliance posture is "compliant-by-current-schema + discipline," NOT "by-construction"; residual ban risk LOW but not zero
+
+**Decision.** Correct the project's compliance framing. The phrase "compliant-by-construction"
+(design §0) is downgraded to **"compliant-by-current-schema PLUS discipline."** Three disciplines
+are load-bearing, not automatic: (a) never DERIVE a prohibited fact from permitted fields (e.g.
+estimating enemy ult timing from enemy K/D cadence reconstructs prohibition #3); (b) the
+schema-envelope property only holds for the *current* documented GEP schema — **re-audit on every
+GEP update**; (c) `banned_characters` is exposed for both teams, so the pick/swap-only rule is the
+necessary control, not a nicety.
+
+**Rationale.** Research refuted #4 + #3 + #8. Confirmed AGAINST Overwolf's official GEP page:
+enemy damage/healing absent; `ult_charge` teammate-only (changelog v292.1.1 "Disabled ult_charge
+in roster for enemy players"); the 3 prohibitions stated on Overwolf's own dev page; Blitz banned
+for injection + the 3 feature categories. BUT: NetEase's May 2026 "Zero Tolerance on Cheats" bans
+"illicit third-party tools" with NO carve-out for GEP/read-only/counter-pick tools, and no primary
+source either ALLOWS or PROHIBITS counter-pick advice. Blitz users got amnesty (no bans) if they
+stopped, but genuine multi-year account bans DID happen for other process-*injecting* software
+(SteelSeries GG + Process Hacker) — confirming GEP-only/no-injection is the *survivable*
+architecture. Residual personal-build ban risk: **LOW (GEP avoids the injection signature that
+drives permabans) but not provably zero, no written safe-harbor.**
+
+**Scope.** Compliance framing across all docs; the never-derive discipline becomes an engine
+invariant (a test, not a convention — see D-005/refinement #7).
+
+**Cross-references.** design §0; research confirmed_claims + refuted #3/#4/#8; CLAUDE.md
+guardrails. The "GEP-only counter advice is TABLE STAKES not a moat" market finding (Counterwatch
+is a sophisticated incumbent) is recorded here too — irrelevant to a personal build's go/no-go,
+but honest: the pool-aware + comp-gap-set-cover intersection IS the unoccupied wedge.
+
+---
+
 ## 2026-06-19  D-006: Engine output type is `Pick | Swap | Hold` — no ban is representable
 
 **Decision.** The engine's TypeScript output type will be a discriminated union of `Pick`,
@@ -92,6 +200,14 @@ must exist first either way.
 
 **Cross-references.** CLAUDE.md "Build order"; design.md §3, §7; PLAN.md phase table.
 
+> **Update 2026-06-19:** Research REFUTED two scaffolding assumptions, both of which strengthen
+> engine-first: (1) the GEP **Simulator cannot answer the `character_name` timing question** — it
+> requires the game running and only confirms *schema*, not *timing*; Q-001 must be verified in a
+> **real match**, not the Simulator. (2) The `JarodWellinghoff/marvel-rivals-tracker` scaffold
+> (design §9) is a 1-day, no-React, webpack skeleton — the OPPOSITE of the mandated React+Vite
+> stack; use `overwolf/events-sample-app` as reference instead. Neither touches Phase 0/1 (the
+> engine is platform-agnostic), confirming it's right to build the engine before any of this.
+
 ---
 
 ## 2026-06-19  D-002: Insert "Phase 0 — Data-Contract Hardening" before engine code
@@ -119,6 +235,15 @@ hand-edited namespaces.
 
 **Cross-references.** council-transcript-20260619-0238.md (full); methodology.md Phase 2;
 all of D-004/D-005/D-006 are acceptance criteria for Phase 0.
+
+> **Update 2026-06-19:** Layer A research independently confirmed all four data bugs against the
+> files (A1: 13 declared vs 32 used mechanisms; A2: "Gan"; A3: Deadpool split + comp_gap has zero
+> Deadpool entries; A4: 13 KB heroes missing from `hero_functions`). It added that the engine
+> needs a `provides_mechanisms` field per hero (inverse of `countered_by`) so conditional
+> coverage = (mechanisms the conditional needs) ∩ (mechanisms the pool provides). **The
+> "weighted set-cover" optimization assumption here is superseded by D-009** (constrained
+> objective + exhaustive search, to kill greedy throw-picks); Phase 0's registry/crosswalk/
+> weights are unchanged.
 
 ---
 
