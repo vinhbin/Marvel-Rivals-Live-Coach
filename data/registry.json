@@ -496,6 +496,16 @@
       "gep_character_name": "White Fox",
       "role": "Strategist",
       "aliases": []
+    },
+    "Cyclops": {
+      "character_id": 53,
+      "canonical_key": "Cyclops",
+      "display_name": "Cyclops",
+      "gep_character_name": "Cyclops",
+      "role": "Duelist",
+      "aliases": [
+        "Cyke"
+      ]
     }
   },
   "alias_index": {
@@ -561,7 +571,9 @@
     "mantis": "Mantis",
     "rocket": "Rocket",
     "ultron": "Ultron",
-    "white fox": "White Fox"
+    "white fox": "White Fox",
+    "cyclops": "Cyclops",
+    "cyke": "Cyclops"
   },
   "unresolved_gep_collisions": {
     "Deadpool": {

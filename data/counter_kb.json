@@ -627,7 +627,8 @@
         }
       ],
       "provides_mechanisms": [
-        "flat_damage"
+        "flat_damage",
+        "mobility_dive"
       ]
     },
     "Black Widow": {
@@ -1550,6 +1551,42 @@
         "hard_cc",
         "mobility_dive",
         "peel",
+        "range_poke"
+      ]
+    },
+    "Cyclops": {
+      "role": "Duelist",
+      "counterability": "conditional",
+      "notes": "Hitscan duelist (Hela/Phoenix family); two-taps 300 HP on headshots and out-ranges Hela (drop-off ~35m). Plays high ground + off-angles. KEY WEAKNESS: no crowd control / no stun, so a diver who reaches him wins; his only self-peel is a knockback + his two dashes. counterability=conditional: answered cleanly IF your comp can deliver dive/mobility to close on him; do NOT try to out-range him (he wins long-range trades). Deny high ground to gut his value. Respect his ult: percent-based (cooks tanks), climbs surfaces to hit high ground, one-shots squishies, combos with damage boosts (Mantis/Rocket).",
+      "countered_by": [
+        {
+          "hero": "Spider-Man",
+          "mechanism": "mobility_dive"
+        },
+        {
+          "hero": "Psylocke",
+          "mechanism": "mobility_dive"
+        },
+        {
+          "hero": "Black Panther",
+          "mechanism": "mobility_dive"
+        },
+        {
+          "hero": "Venom",
+          "mechanism": "mobility_dive"
+        },
+        {
+          "hero": "Thor",
+          "mechanism": "mobility_dive"
+        },
+        {
+          "hero": "Black Cat",
+          "mechanism": "mobility_dive"
+        }
+      ],
+      "provides_mechanisms": [
+        "burst_range",
+        "hitscan",
         "range_poke"
       ]
     }

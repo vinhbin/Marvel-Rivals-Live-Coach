@@ -71,7 +71,8 @@
     "Mr Fantastic":     ["frontline_space"],
     "Scarlet Witch":    ["burst_pick", "anti_dive_peel"],
     "Jeff":             ["sustain_healing", "ult_denial_defensive"],
-    "Ultron":           ["range_poke", "sustain_healing"]
+    "Ultron":           ["range_poke", "sustain_healing"],
+    "Cyclops":          ["range_poke", "burst_pick", "anti_flyer_grounding"]
   },
 
   "playstyle_modifiers": {
