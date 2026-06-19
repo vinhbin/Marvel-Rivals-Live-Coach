@@ -23,6 +23,11 @@ materially affect a personal build, and the API divergence makes the choice expe
 **Scope.** Blocks Phase 3+ (any Overwolf scaffolding). Does NOT block Phase 0/1 (the engine is
 platform-agnostic plain TS — build it regardless).
 
+**Resolution (2026-06-19): DEFER.** User chose to decide after the engine is proven (post Phase 1)
+rather than commit now. The engine needs no platform; deciding later avoids a premature,
+costly-to-reverse choice and front-loads the highest-value work. Q-005 stays OPEN, re-triggered at
+the Phase 2→3 boundary.
+
 **Cross-references.** design.md §9; PLAN.md Q-005; research synthesis refinement #10.
 
 ---
