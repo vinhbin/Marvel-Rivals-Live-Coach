@@ -39,10 +39,12 @@
   },
 
   "function_gap_weight": {
-    "_doc": "Base weight of an UNFILLED comp function = ideal_providers shortfall x per_missing_provider, with a critical bonus when a function with ideal>=1 has ZERO providers (comp_gap_model.gap_rules.critical_gap).",
+    "_doc": "Base weight of an UNFILLED comp function = ideal_providers shortfall x per_missing_provider, with a critical bonus when a function with ideal>=1 has ZERO providers (comp_gap_model.gap_rules.critical_gap). A candidate earns this gap weight for a function it DECLARES (hero_functions), and a discounted fraction for one reached only via the mechanism->function crosswalk (a weaker 'kit touches this role' signal). A single candidate's total function-fill credit is capped (per_candidate_fill_cap) so one pick can't claim credit for many unrelated gaps at once (D-009 double-counting guard).",
     "per_missing_provider": 1.0,
     "critical_zero_provider_bonus": 1.0,
-    "escalate_anti_dive_backline_bonus": 1.0
+    "escalate_anti_dive_backline_bonus": 1.0,
+    "crosswalk_credit_fraction": 0.34,
+    "per_candidate_fill_cap": 3.0
   },
 
   "objective_penalties": {
