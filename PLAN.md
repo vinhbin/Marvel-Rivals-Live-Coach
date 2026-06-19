@@ -31,6 +31,18 @@ When two artifacts disagree, the higher one wins. Fix the LOWER artifact to matc
 
 ## Status snapshot (APPEND a new dated block on top each session; never overwrite the last one)
 
+### 2026-06-19 (Phase 0 data review) — dev validated the hand-assigned tags; engine cleared to start
+
+- ✅ **Dev game-knowledge review of Phase 0's hand-assigned data** (the soft risk flagged at Phase 0 close: zod proves the tags are *consistent*, not *correct* — golden fixtures can't catch a plausible-but-wrong tag, so the human had to). Corrections committed (`fix(data):`), validate + typecheck green:
+  - Human Torch `dive_flank,zone_wall` → `range_poke` (ranged flyer, not a diver).
+  - Mr Fantastic `dive_flank` → `frontline_space` (plays like a tank / big-body).
+  - Scarlet Witch `dive_flank,burst_pick` → `burst_pick,anti_dive_peel` (deletes targets AND answers dives; not a diver).
+  - Ultron `sustain_healing,range_poke` → `range_poke,sustain_healing` (damage+heal, not a sustain bot).
+  - crosswalk `zone_denial` `[zone_wall,anti_dive_peel]` → `[zone_wall]` (zoning = space denial, not peel).
+  - Jeff unchanged — dev confirmed the ult (swallow) is the meaningful threat, so `ult_denial_defensive` stays.
+- 🟡 **Partial review.** Surface 1 (hero_functions tags) reviewed in full. STILL UNREVIEWED before/with the engine: two crosswalk rows the agent flagged as shaky (`hard_cc`→`[anti_dive_peel,burst_pick]`, `flat_damage`→`[dive_flank,burst_pick]`) and all of `weights.json` (threat-priority ordering + `min_confident_score=0.5`). **Decision: defer weights tuning until the engine runs** — numbers are best judged against live output + golden fixtures, not in the abstract. They're plain JSON, trivially changeable, re-validated on edit.
+- ✅ **Phase 1 readiness: CLEARED.** All hard deps (`0.*`) met; the data the engine consumes is now dev-trusted. Next: **Phase 1.1 engine core** (D-009 constrained objective + exhaustive search), then 1.4 graceful Hold, 1.3 conditional resolution, 1.2 golden fixtures (D-005, the trust oracle).
+
 ### 2026-06-19 (Phase 0) — Data-Contract Hardening COMPLETE; `npm run validate` green
 
 - ✅ **Phase 0 done (0.1–0.7).** All seven sub-tasks shipped; `npm run validate` and `npm run typecheck` both pass.
@@ -233,4 +245,4 @@ Every cut is logged in `docs/decision-log.md`. No silent removal.
 
 ---
 
-_Last updated: 2026-06-19 (Phase 0 — Data-Contract Hardening complete, validate green) by me._
+_Last updated: 2026-06-19 (Phase 0 data review — tags dev-validated, engine cleared to start) by me._
