@@ -6,6 +6,50 @@ decision without escalation.
 
 ---
 
+## 2026-06-19  D-012: Phase 1 engine semantics — 2-2-2 role queue, Deadpool graceful-skip, both Pick+Swap modes
+
+**Decision.** Three implementation choices for the Phase 1 engine, settled with the user before
+coding:
+
+1. **Role queue = enforce 2-2-2.** The objective's "legal role slot" hard constraint is
+   instantiated as the current Marvel Rivals ranked default: at most 2 Vanguard / 2 Duelist /
+   2 Strategist. A comfort-pool hero is a legal **Pick** candidate only if its role still has an
+   open slot; a legal **Swap** candidate must replace a *same-role* teammate (so the swap is
+   role-queue-neutral). Role comes from the registry (every hero is tagged Vanguard/Duelist/
+   Strategist). This is what prevents the engine from ever recommending a 3-DPS / 0-healer throw —
+   the same pathology D-009 targets, now also enforced as a hard constraint, not left to penalties
+   alone. (Not a config flag yet; open-queue support is a trivial later relaxation if MR changes.)
+
+2. **Deadpool (A3) = graceful skip, pre-spike.** Because GEP emits one `"Deadpool"` string for
+   three role-split registry keys and disambiguation is unresolved (Q-001), the engine treats a
+   bare `"Deadpool"` as an **unresolvable hero**: it still counts toward roster size (so role-slot
+   and roster-completeness math stay correct) but is **skipped** for threat-tagging (enemy side)
+   and function-tagging (our side), and the engine surfaces a note. No guessing a variant. This is
+   the most honest behavior until Q-001/A3 resolves role disambiguation in a real match. Folds into
+   the same graceful-degradation path as unknown/masked names (Phase 1.4).
+
+3. **Modes = both Pick (draft) and Swap (mid-match) from day one.** Both share the single D-009
+   objective. Pick mode: open slots / no current comp → best legal add from pool. Swap mode: full
+   comp → best single ≤1-change same-role swap from pool. `Hold` when no candidate clears
+   `min_confident_score`. Building both now (vs. Pick-first) is required because Swap is the
+   live-overlay's primary job (Phase 5) and the golden fixtures (D-005) must cover both.
+
+**Rationale.** Each is a behavior-shaping choice the plan left open, and PLAN.md's discipline is
+"never proceed on a silent assumption." 2-2-2 keeps recommendations legal-for-ranked and reinforces
+D-009. Deadpool-skip avoids fabricating a variant the data can't yet justify. Both-modes matches the
+engine contract (`Pick | Swap | Hold`, D-006) and the spec's draft-vs-mid-match split.
+`introduced_vulnerability` needs no new decision — D-009 already fixes its reading (candidate's own
+`countered_by` ∩ enemy roster).
+
+**Scope.** Phase 1 engine (1.1–1.4). The 2-2-2 cap and same-role swap rule are new entries under
+PLAN.md Shared Contracts (Engine objective). Deadpool-skip is bounded by Q-001 — revisit when the
+GEP spike resolves role disambiguation.
+
+**Cross-references.** weights.json `objective_formula.hard_constraints`; D-006, D-009; PLAN.md
+Phase 1, Shared Contracts, Q-001/A3.
+
+---
+
 ## 2026-06-19  D-011: Mechanism vocab reconciled by MODERATE COLLAPSE to a closed 24-token set
 
 **Decision.** Phase 0 fixed the A1 bug (13 declared vs 32 used mechanism tokens) by **moderate

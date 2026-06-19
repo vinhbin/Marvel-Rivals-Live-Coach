@@ -31,6 +31,15 @@ When two artifacts disagree, the higher one wins. Fix the LOWER artifact to matc
 
 ## Status snapshot (APPEND a new dated block on top each session; never overwrite the last one)
 
+### 2026-06-19 (Phase 1 start) — engine semantics settled (D-012); building 1.1→1.4→1.3→1.2
+
+- ✅ **Three engine design choices locked with the user before any code (D-012).** Plan left them open; resolved per the "no silent assumption" discipline:
+  - **Role queue: enforce 2-2-2** (≤2 Vanguard / 2 Duelist / 2 Strategist). Instantiates the objective's "legal role slot" hard constraint. Pick candidate legal only if its role slot is open; Swap candidate must replace a same-role teammate. Reinforces D-009 (no 3-DPS throw).
+  - **Deadpool (A3): graceful skip pre-spike.** Bare `"Deadpool"` counts toward roster size but is skipped for threat/function tagging (can't pick a variant from one GEP name); surfaces a note. Bounded by Q-001.
+  - **Modes: both Pick (draft) + Swap (mid-match)** from day one, one shared D-009 objective; `Hold` below `min_confident_score`.
+- ✅ `introduced_vulnerability` needs no new decision — D-009 already fixes the reading (candidate's own `countered_by` ∩ enemy roster).
+- 🟡 **Building now:** 1.1 engine core → 1.4 graceful Hold → 1.3 conditional resolution → 1.2 golden fixtures (D-005). Doc commit (`docs(plan)` + `docs(log)`) precedes the `feat(engine)` commits per the coordination protocol.
+
 ### 2026-06-19 (Phase 0 data review) — dev validated the hand-assigned tags; engine cleared to start
 
 - ✅ **Dev game-knowledge review of Phase 0's hand-assigned data** (the soft risk flagged at Phase 0 close: zod proves the tags are *consistent*, not *correct* — golden fixtures can't catch a plausible-but-wrong tag, so the human had to). Corrections committed (`fix(data):`), validate + typecheck green:
@@ -175,6 +184,8 @@ Solo build, so the multi-person locking is light — but the discipline that mat
 | Comp-function vocab | registry (0.1) | comp_gap_model, crosswalk, engine | Closed set (`frontline_space`, `anti_dive_peel`, …). |
 | Engine output | engine (1.1) | post-game UI, live overlay | `type Suggestion = Pick \| Swap \| Hold` — **no `Ban` variant exists** (D-006). Carries a confidence. |
 | Engine objective | engine (1.1) | — | Single constrained score per candidate swap; **exhaustive** over comfort pool, NOT greedy set-cover (D-009): `+threat +function −introduced_vulnerability −clash −redundancy`, hard-constrained to pool ∩ legal slot ∩ ≤1 change. |
+| Role-slot legality | engine (1.1) | engine candidate filter | **2-2-2 role queue (D-012):** ≤2 Vanguard / 2 Duelist / 2 Strategist. Pick candidate legal iff its role has an open slot; Swap candidate must replace a **same-role** teammate. Role from registry. |
+| Unresolvable hero | engine (1.1) | engine + degradation (1.4) | A roster name that doesn't resolve to a single canonical key (notably bare `"Deadpool"`, A3) counts toward roster size but is **skipped** for threat/function tagging; engine surfaces a note. Bounded by Q-001 (D-012). |
 | `provides_mechanisms` | registry/KB (0.x) | engine conditional resolution | Per-hero inverse of `countered_by`. Conditional coverage = needed-mechanisms ∩ pool-provided-mechanisms (research refinement #5). |
 | Threat weight | registry/overlay (0.4) | engine | `weight = f(counterability, patch_trend)` — formula written in 0.4; no magic numbers in engine code. |
 | GEP roster fields consumed | gep (3.x) | engine | ONLY: `character_name`, `character_id`, `team`, `is_teammate`, `uid`, `is_alive`, K/D/A, `is_local`. Never read/derive enemy dmg/healing or enemy `ult_charge`. **Never DERIVE a prohibited fact from permitted fields** (e.g. enemy ult timing from K/D cadence — D-007). |
@@ -216,6 +227,8 @@ Every cut is logged in `docs/decision-log.md`. No silent removal.
 - **D-008 (2026-06-19):** Integrate `macro_reader.json` (4th KB); reads gated (Q-006) + framing-constrained (kill tally = internal trigger only, self-directed coaching only).
 - **D-009 (2026-06-19):** Engine is a single constrained objective + exhaustive search, NOT greedy set-cover (kills throw-picks). Supersedes the set-cover assumption in D-002.
 - **D-010 (2026-06-19):** Platform choice (native vs ow-electron) is an OPEN user decision (Q-005); don't default to native; blocks Overwolf scaffolding only, not the engine.
+- **D-011 (2026-06-19):** Mechanism vocab reconciled by moderate collapse to a closed 24-token set; merge map in the registry. (Logged at Phase 0; listed here for completeness.)
+- **D-012 (2026-06-19):** Phase 1 engine semantics — enforce 2-2-2 role queue (legal-slot constraint), graceful-skip the unresolved Deadpool name pre-spike, support both Pick and Swap modes from day one.
 
 ---
 
