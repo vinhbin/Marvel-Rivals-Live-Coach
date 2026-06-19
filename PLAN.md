@@ -31,6 +31,40 @@ When two artifacts disagree, the higher one wins. Fix the LOWER artifact to matc
 
 ## Status snapshot (APPEND a new dated block on top each session; never overwrite the last one)
 
+### 2026-06-19 (Phase 2 COMPLETE) — post-game coach shipped; first engine consumer is live + tested
+
+- ✅ **Phase 2.1 done.** `src/postgame/` is a pure **projection** of the engine's `EngineResult`
+  into a `PostGameReport` (design §6 mode 2): full **matchup table**, complete **ranked alternatives**
+  ("what you could've swapped to"), and **pool gaps** ("what to add"). No new engine logic, no live
+  concerns. `npm run typecheck`, `npm run validate`, and `npm test` (56/56) all green.
+- ✅ **Scope locked with the user (3 choices), all lowest-risk / engine-aligned:**
+  (1) **single finished-roster snapshot** (no match-timeline — that needs the Phase 3 GEP spike,
+  gated by Q-001/Q-006); (2) **analysis module only**, no React (UI is a thin later step,
+  interleaved with Phase 5); (3) **full ranked alternatives + pool-gap analysis**, not just the top
+  pick. Recorded in `docs/plans/2026-06-19-postgame-coach-design.md` (committed).
+- ✅ **Compliance inherited for free + independently reviewed.** The module only reads engine output
+  + the public KB, so a ban is unrepresentable (D-006) and no enemy stat is touched (D-007/D-008). A
+  dedicated compliance reviewer returned **CLEAN** across all 5 guardrails; framing stays
+  self-directed ("your pool can't answer X / you could've played Y").
+- ✅ **D-005 discipline mirrored.** `test/postgame.test.ts` = hand-judged matchup assertions (reusing
+  the game-validated golden rosters) + property invariants (headline === engine suggestion;
+  poolGap ⇔ unanswered matchup row; alternatives mirror `ranked`; every alt ∈ pool; no ban field
+  serialized) + a 40-seed degraded-input fuzz (never throws).
+- ✅ **Parallel review caught two real bugs, both TDD-fixed before commit (review working as designed):**
+  (a) `alternatives[].closesFunctions` was read off `result.coverage`, which is the POST-suggestion
+  comp — so the winner had already zeroed its own shortfalls and the column was blank for every
+  candidate; now recomputed **per-candidate** against the comp without that candidate (mirrors the
+  engine). (b) a pool hero already fielded was offered under `couldHaveAnswered` ("play the hero you
+  already play"); now on-team heroes are excluded. Added a winner↔headline consistency invariant +
+  an on-team-exclusion test (the regression guards).
+- ✅ **Engine surface widened (export-only, no logic change):** `resolveName`,
+  `mechanismsProvidedBy`, and supporting types re-exported from `src/engine/index.js` so postgame
+  stays on the PUBLIC surface. Golden fixtures stayed green throughout (16/16).
+- 🟢 **Next: Phase 3 — GEP data spike.** Q-005 (native vs ow-electron) now re-triggers at this
+  Phase 2→3 boundary (deferred decision, owner = YOU). Q-001 (enemy `character_name` timing) + Q-006
+  (`kill_feed` attribution) need a REAL match (Simulator can't answer them). Core C3 (post-game
+  coach) is now MET — the trustworthy, compliant core exists end-to-end on hand-entered rosters.
+
 ### 2026-06-19 (Phase 1 data review) — dev-validated the engine oracle; Phase 2 cleared to start
 
 - ✅ **Dev game-knowledge review of the Phase 1 oracle** (the D-005 soft risk: fixtures + tags encode the agent's read, not the dev's). Outcome: **data was sound** — all 8 golden fixtures and the fixture-driving `hero_functions` tags confirmed by the dev, with two refinements committed (`test(fixtures):`):
@@ -138,7 +172,7 @@ Solo build — Owner column is "me" throughout; it stays so the format is ready 
 
 | # | Component | File(s) | Owner | Status | Deps | Notes |
 |---|-----------|---------|-------|--------|------|-------|
-| 2.1 | Post-game review: full matchup table, what you could've swapped to, pool gaps | `src/postgame/*.ts` + UI | me | ⬜ | 1.* | Design §6 mode 2; lowest-risk consumer, no live edge cases |
+| 2.1 | Post-game review: full matchup table, what you could've swapped to, pool gaps | `src/postgame/*.ts` (UI deferred) | me | ✅ | 1.* | DONE. Pure projection of `EngineResult` → `PostGameReport` (matchup + full ranked alternatives + pool gaps). Single-snapshot, analysis-only (no React). 56/56 tests; compliance review CLEAN; 2 review bugs TDD-fixed. Design: `docs/plans/2026-06-19-postgame-coach-design.md` |
 
 ### Phase 3 — GEP data spike (live plumbing)
 
@@ -217,7 +251,7 @@ Solo build, so the multi-person locking is light — but the discipline that mat
 **Core (ship-blockers, must be high quality):**
 1. **C1** Phase 0 registry + validated KBs (everything depends on it).
 2. **C2** Set-cover engine that passes the golden fixtures (D-005) and emits `Pick \| Swap \| Hold`.
-3. **C3** Post-game coach over hand-entered/recorded rosters (the trustworthy, compliant core).
+3. **C3** Post-game coach over hand-entered/recorded rosters (the trustworthy, compliant core). ✅ **MET** (Phase 2.1).
 
 **Stretch (lower bar; cut without ceremony if Core slips):**
 - **S1** Live GEP swap detection · **S2** Live glanceable overlay · **S3** Automated patch-overlay API sync · **S4** ult-combo table + HUD detection · **S5** playstyle inference from public most-played heroes · **S6** macro stagger/tempo read (Phase 6.1) · **S7** personal-nemesis + team-threat reads (Phase 6.2, gated on Q-006).
@@ -277,4 +311,4 @@ Every cut is logged in `docs/decision-log.md`. No silent removal.
 
 ---
 
-_Last updated: 2026-06-19 (Phase 1 data review — oracle dev-validated; Phase 2 cleared) by me._
+_Last updated: 2026-06-19 (Phase 2 complete — post-game coach shipped; C3 met; next = Phase 3 GEP spike) by me._
