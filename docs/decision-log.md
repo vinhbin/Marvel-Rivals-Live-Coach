@@ -6,6 +6,38 @@ decision without escalation.
 
 ---
 
+## 2026-06-19  D-011: Mechanism vocab reconciled by MODERATE COLLAPSE to a closed 24-token set
+
+**Decision.** Phase 0 fixed the A1 bug (13 declared vs 32 used mechanism tokens) by **moderate
+collapse**, not adopt-as-used and not minimal merge. The canonical closed `mechanism_vocab` is
+**24 tokens** (`data/registry.json`). Eight synonym aliases are merged into a canonical token via
+`mechanism_merge_map`; the edges in `counter_kb.json` were rewritten to the canonical form (10
+edge rewrites). The declared-but-unused `percent_damage` was DROPPED and the real-usage
+`flat_damage` kept (4 edges) — a deliberate divergence from the audit's suggested rename.
+
+Merges (alias → canonical): `range_advantage`→`range_poke`, `space_denial`→`zone_denial`,
+`ult_zone`→`zone_denial`, `chase`→`mobility_dive`, `contest`→`contest_vertical`,
+`go_over`→`contest_vertical`, `ult_counter`→`ult_turnaround`, `ult_punish`→`ult_turnaround`.
+Promoted as genuinely-new mechanics: `mark`, `brawl`, `cooldown_force`, `support_deny`,
+`kill_through_ult`, `survive_onslaught`, `zone_denial`, `contest_vertical`, `ult_turnaround`,
+`clone_pressure`, `prolonged_hitbox`.
+
+**Rationale.** User chose moderate collapse over minimal (≈28 tokens, more crosswalk edges) and
+adopt-as-used (32 tokens, synonym debt deferred). Collapsing obvious synonyms gives the 0.3
+crosswalk a clean mechanism→function join and keeps the engine objective (D-009) from
+double-counting near-duplicate coverage; genuinely distinct mechanics are preserved so nuance
+isn't lost. Three tokens (`mark`, `clone_pressure`, `prolonged_hitbox`) map to zero comp-functions
+in the crosswalk on purpose — they are per-duel tactics, not comp roles.
+
+**Scope.** The closed mechanism vocab is a Shared Contract; changes require a `CONTRACT:` commit.
+`provides_mechanisms` (0.7) and the crosswalk (0.3) are built on this 24-token set.
+
+**Cross-references.** PLAN.md 0.2, Shared Contracts (Mechanism vocab); registry
+`mechanism_merge_map`; supersedes the raw 13-token `mechanism_vocab` in the pre-Phase-0
+`counter_kb.json`.
+
+---
+
 ## 2026-06-19  D-010: Platform choice (Overwolf native vs ow-electron) is an OPEN user decision — do not default to native
 
 **Decision.** Do NOT scaffold yet. The Layer A research refuted the assumption that native is

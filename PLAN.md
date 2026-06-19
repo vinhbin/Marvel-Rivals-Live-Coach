@@ -31,6 +31,20 @@ When two artifacts disagree, the higher one wins. Fix the LOWER artifact to matc
 
 ## Status snapshot (APPEND a new dated block on top each session; never overwrite the last one)
 
+### 2026-06-19 (Phase 0) — Data-Contract Hardening COMPLETE; `npm run validate` green
+
+- ✅ **Phase 0 done (0.1–0.7).** All seven sub-tasks shipped; `npm run validate` and `npm run typecheck` both pass.
+- ✅ **0.1 `data/registry.json`** — canonical registry: 52 heroes (character_id + display + gep_character_name + role + aliases), 63-entry alias index. Resolves A2 (`Gan`→Jean Grey), flags A3 (3 Deadpool keys → one GEP `Deadpool` name) in `unresolved_gep_collisions`. `character_id` is an INTERNAL id; the GEP numeric id mapping is deferred to the GEP spike (Q-001).
+- ✅ **0.2 mechanism vocab reconciled** — A1 fixed: 13 declared / 32 used → **closed 24-token vocab** by moderate collapse (**D-011**, user-chosen). 10 edges rewritten to canonical tokens; zero unknown tokens (zod-enforced).
+- ✅ **0.3 `data/crosswalk.json`** — mechanism↔comp-function join (the "third KB" the council caught); total over the 24-token vocab; 3 per-duel mechanics map to `[]` on purpose.
+- ✅ **0.4 `data/weights.json`** — counterability→weight, trend→multiplier (neutral until patch overlay/Q-002), raise/lower→delta, objective penalties; **threat-weight + D-009 objective formulas written down**. No magic numbers in engine code.
+- ✅ **0.5 ban machinery stripped** (D-004) — `ban_logic`/`ban_value_numeric`/`ban_note` quarantined to `_archival_do_not_use`; ban-value PROSE scrubbed from all hero notes; validator asserts zero ban fields/prose in the runtime path.
+- ✅ **0.6 zod schemas + `npm run validate`** — per-KB schemas key off the registry vocab; cross-file invariants enforce A1, A2, A4 parity, D-004/D-006 no-ban, and 0.7 inverse-consistency. `.strict()` makes a stray ban field a parse error.
+- ✅ **0.7 `provides_mechanisms`** added per hero (inverse of `countered_by`, same validated vocab); validator checks it's the consistent inverse.
+- ✅ **A4 parity closed** — added `hero_functions` for the 10 missing heroes (Angela, Emma Frost, Black Widow, Human Torch, Iron Fist, Magik, Mr Fantastic, Scarlet Witch, Jeff, Ultron); Deadpool split allow-listed pending GEP role disambiguation.
+- ✅ Project scaffolded: `package.json` (tsx + zod + typescript), `tsconfig.json`, `src/schema/`.
+- Decision added: **D-011**. Next: **Phase 1 — engine + golden fixtures** (the critical path; D-009 constrained-objective core, gated by D-005 fixtures). Q-005 (platform) still deferred to the Phase 2→3 boundary.
+
 ### 2026-06-19 (later) — Layer A research folded in + macro_reader (4th KB) integrated
 
 - ✅ Layer A Phase 1+4 research workflow finished. **Independently confirmed all 4 data bugs against the files** (A1 mechanism vocab 13-vs-32; A2 "Gan"; A3 Deadpool split; A4 13 heroes missing from `hero_functions`) and confirmed the **compliance posture against Overwolf's official GEP page** (enemy dmg/healing absent; `ult_charge` teammate-only per changelog v292.1.1; 3 prohibitions on the dev page).
@@ -63,13 +77,13 @@ Solo build — Owner column is "me" throughout; it stays so the format is ready 
 
 | # | Component | File(s) | Owner | Status | Deps | Notes / acceptance |
 |---|-----------|---------|-------|--------|------|--------------------|
-| 0.1 | Canonical registry: hero key + `character_id` + display-name aliases + closed mechanism vocab + function vocab | `data/registry.json` (+ TS loader) | me | ⬜ | - | Single source of truth. Resolves `Gan`→Jean, `Deadpool_Tank/DPS/Strat`→id+role, Jeff/Bucky/Mr Fantastic display names (D-002) |
-| 0.2 | Reconcile `mechanism_vocab` to actual usage (13 declared vs ~20+ used) | `data/counter_kb.json`, registry | me | ⬜ | 0.1 | zod validates KB against registry vocab with ZERO unknown tokens |
-| 0.3 | Mechanism ↔ comp-function crosswalk (the "third KB" the council caught) | `data/crosswalk.json` | me | ⬜ | 0.1 | Lets counter mode and comp-gap mode actually join (`anti_flyer_grounding`↔`grounding`) |
-| 0.4 | Numeric weights: `trend`→multiplier, `counterability`→weight, `raise/lower`→delta; write the threat-weight formula down | registry / patch overlay schema | me | ⬜ | 0.1 | Makes the constrained objective computable (D-002, D-009) |
-| 0.5 | Strip ban machinery from runtime path (`ban_logic`, `ban_value_numeric`, `ban_note`) | `data/counter_kb.json` | me | ⬜ | 0.1 | Quarantined/deleted; engine never reads it (D-004) |
-| 0.6 | zod schemas for all KBs + registry; CI-style validate script | `src/schema/*.ts` | me | ⬜ | 0.1–0.5 | `npm run validate` fails on any drift — enforces hero-set parity across both KBs (A4) + zero unknown mechanisms (A1) |
-| 0.7 | Add `provides_mechanisms` per hero (inverse of `countered_by`, same validated vocab) | registry / `counter_kb.json` | me | ⬜ | 0.1, 0.2 | Enables conditional coverage = needed ∩ pool-provided (research refinement #5) |
+| 0.1 | Canonical registry: hero key + `character_id` + display-name aliases + closed mechanism vocab + function vocab | `data/registry.json` (+ TS loader) | me | ✅ | - | DONE. 52 heroes, 63-alias index. `Gan`→Jean (A2), Deadpool collision flagged (A3), display names set. `character_id`=internal; GEP id deferred to Q-001 (D-002) |
+| 0.2 | Reconcile `mechanism_vocab` to actual usage (13 declared vs 32 used) | `data/counter_kb.json`, registry | me | ✅ | 0.1 | DONE. Closed 24-token vocab via moderate collapse (D-011); 10 edges rewritten; zod enforces ZERO unknown tokens |
+| 0.3 | Mechanism ↔ comp-function crosswalk (the "third KB" the council caught) | `data/crosswalk.json` | me | ✅ | 0.1 | DONE. Total over the 24-token vocab; counter mode ↔ comp-gap mode join (`grounding`↔`anti_flyer_grounding`) |
+| 0.4 | Numeric weights: `trend`→multiplier, `counterability`→weight, `raise/lower`→delta; write the threat-weight formula down | registry / patch overlay schema | me | ✅ | 0.1 | DONE. `data/weights.json`; threat-weight + D-009 objective formulas written out; trend neutral until Q-002 (D-002, D-009) |
+| 0.5 | Strip ban machinery from runtime path (`ban_logic`, `ban_value_numeric`, `ban_note`) | `data/counter_kb.json` | me | ✅ | 0.1 | DONE. Quarantined to `_archival_do_not_use`; ban prose scrubbed from notes; validator asserts zero ban in runtime path (D-004) |
+| 0.6 | zod schemas for all KBs + registry; CI-style validate script | `src/schema/*.ts` | me | ✅ | 0.1–0.5 | DONE. `npm run validate` GREEN + `npm run typecheck` clean. Enforces A1, A2, A4 parity, D-004/D-006 no-ban, 0.7 inverse |
+| 0.7 | Add `provides_mechanisms` per hero (inverse of `countered_by`, same validated vocab) | registry / `counter_kb.json` | me | ✅ | 0.1, 0.2 | DONE. Per-hero `provides_mechanisms`; validator checks it's the consistent inverse of `countered_by` (research refinement #5) |
 
 ### Phase 1 — Engine + golden fixtures  (critical path)
 
@@ -210,7 +224,7 @@ Every cut is logged in `docs/decision-log.md`. No silent removal.
 
 "Deliver" here = trust it in your own ranked games. All must pass:
 
-1. [ ] Every KB validates against the registry with zero unknown tokens (`npm run validate` green).
+1. [x] Every KB validates against the registry with zero unknown tokens (`npm run validate` green). ✅ Phase 0.
 2. [ ] Engine passes 100% of the golden fixtures (D-005).
 3. [ ] Engine output type cannot represent a ban; grep confirms no ban field is serialized (D-006).
 4. [ ] Engine consumes ONLY the whitelisted GEP fields (Shared Contracts) — no enemy dmg/healing/ult_charge anywhere.
@@ -219,4 +233,4 @@ Every cut is logged in `docs/decision-log.md`. No silent removal.
 
 ---
 
-_Last updated: 2026-06-19 (Layer A research + macro_reader integration) by me._
+_Last updated: 2026-06-19 (Phase 0 — Data-Contract Hardening complete, validate green) by me._
