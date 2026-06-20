@@ -349,7 +349,7 @@
       "display_name": "Spider-Man",
       "gep_character_name": "Spider-Man",
       "role": "Duelist",
-      "aliases": []
+      "aliases": ["Spiderman", "Spider Man", "Spidey"]
     },
     "Squirrel Girl": {
       "character_id": 35,
@@ -365,7 +365,7 @@
       "display_name": "Star-Lord",
       "gep_character_name": "Star-Lord",
       "role": "Duelist",
-      "aliases": []
+      "aliases": ["Star Lord", "StarLord", "Starlord", "Quill"]
     },
     "Storm": {
       "character_id": 37,
@@ -404,10 +404,10 @@
     "Adam": {
       "character_id": 41,
       "canonical_key": "Adam",
-      "display_name": "Adam",
+      "display_name": "Adam Warlock",
       "gep_character_name": "Adam",
       "role": "Strategist",
-      "aliases": []
+      "aliases": ["Adam Warlock", "Warlock"]
     },
     "Cloak and Dagger": {
       "character_id": 42,
@@ -476,10 +476,10 @@
     "Rocket": {
       "character_id": 50,
       "canonical_key": "Rocket",
-      "display_name": "Rocket",
+      "display_name": "Rocket Raccoon",
       "gep_character_name": "Rocket",
       "role": "Strategist",
-      "aliases": []
+      "aliases": ["Rocket Raccoon", "Rocket Racoon", "Raccoon", "Racoon"]
     },
     "Ultron": {
       "character_id": 51,
@@ -551,6 +551,37 @@
     "sigh": "Psylocke",
     "scarlet witch": "Scarlet Witch",
     "spider-man": "Spider-Man",
+    "spiderman": "Spider-Man",
+    "spider man": "Spider-Man",
+    "spidey": "Spider-Man",
+    "star lord": "Star-Lord",
+    "starlord": "Star-Lord",
+    "quill": "Star-Lord",
+    "adam warlock": "Adam",
+    "warlock": "Adam",
+    "cap": "Captain America",
+    "captain": "Captain America",
+    "dr strange": "Doctor Strange",
+    "dr. strange": "Doctor Strange",
+    "doc strange": "Doctor Strange",
+    "reed": "Mr Fantastic",
+    "cloak & dagger": "Cloak and Dagger",
+    "c&d": "Cloak and Dagger",
+    "cnd": "Cloak and Dagger",
+    "cloak": "Cloak and Dagger",
+    "dagger": "Cloak and Dagger",
+    "land shark": "Jeff",
+    "invis": "Invisible Woman",
+    "invisible": "Invisible Woman",
+    "sue": "Invisible Woman",
+    "sue storm": "Invisible Woman",
+    "dino": "Devil Dinosaur",
+    "devil dino": "Devil Dinosaur",
+    "peni": "Peni Parker",
+    "squirrel": "Squirrel Girl",
+    "ironman": "Iron Man",
+    "ironfist": "Iron Fist",
+    "the punisher": "Punisher",
     "squirrel girl": "Squirrel Girl",
     "star-lord": "Star-Lord",
     "storm": "Storm",
@@ -570,6 +601,10 @@
     "luna": "Luna",
     "mantis": "Mantis",
     "rocket": "Rocket",
+    "rocket raccoon": "Rocket",
+    "rocket racoon": "Rocket",
+    "raccoon": "Rocket",
+    "racoon": "Rocket",
     "ultron": "Ultron",
     "white fox": "White Fox",
     "cyclops": "Cyclops",
