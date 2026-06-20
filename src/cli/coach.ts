@@ -16,22 +16,33 @@ import { analyzePostGame } from "../postgame/index.js";
 import type { EngineInput, EngineMode } from "../engine/index.js";
 import { parseNames, formatReport } from "./format.js";
 
-/** The ordered prompts for one matchup; answers are consumed in this order. */
+/**
+ * Prompts for the FIRST matchup, in input order. Your stable inputs (pool, team) come first; the
+ * enemy comp — which fills in / changes latest in a real draft — comes last, so you don't wait on it
+ * or re-type your own picks. After the first run, the loop only re-asks the enemy comp (your team +
+ * pool persist) unless you choose to reset.
+ */
 const PROMPTS = [
-  "Enemy comp: ",
-  "Your team:  ",
   "Your pool:  ",
+  "Your team:  ",
   "Mode [pick/swap/auto]: ",
-  "Another? [Y/n]: ",
+  "Enemy comp: ",
+  "Another? [Y=new enemy / r=reset all / n=quit]: ",
 ] as const;
 
-function runMatchup(answers: string[]): boolean {
-  const [enemyLine = "", teamLine = "", poolLine = "", modeLine = "", againLine = ""] = answers;
-  const mode = modeLine.trim().toLowerCase();
+interface Stable {
+  poolLine: string;
+  teamLine: string;
+  modeLine: string;
+}
+
+/** Run one matchup from the stable inputs + the current enemy line; print the report. */
+function runMatchup(stable: Stable, enemyLine: string): void {
+  const mode = stable.modeLine.trim().toLowerCase();
   const input: EngineInput = {
     enemy: parseNames(enemyLine),
-    team: parseNames(teamLine),
-    comfortPool: parseNames(poolLine),
+    team: parseNames(stable.teamLine),
+    comfortPool: parseNames(stable.poolLine),
     ...(mode === "pick" || mode === "swap" ? { mode: mode as EngineMode } : {}),
   };
 
@@ -40,40 +51,78 @@ function runMatchup(answers: string[]): boolean {
   } else {
     stdout.write("\n" + formatReport(analyzePostGame(input)) + "\n\n");
   }
-  return againLine.trim().toLowerCase() !== "n"; // continue unless the user said "n"
 }
+
+// Index of the prompts in PROMPTS we still ask on every loop (pool, team, mode, enemy, again).
+const POOL = 0, TEAM = 1, MODE = 2, ENEMY = 3, AGAIN = 4;
+const ENEMY_ONLY_PROMPT = "New enemy comp (team+pool kept): ";
 
 function main(): void {
   const rl = createInterface({ input: stdin, output: stdout });
 
   stdout.write("\nRivals Coach — manual input (no game needed). Enter comma-separated hero names.\n");
-  stdout.write("Empty line = skip. Ctrl+C to quit. Names use display names or aliases.\n\n");
+  stdout.write("Your pool + team are entered once and kept; only the enemy comp is re-asked as it\n");
+  stdout.write("fills in. Empty line = skip. Ctrl+C to quit. Names use display names or aliases.\n\n");
 
+  // Two phases: 'full' collects pool/team/mode/enemy/again; 'enemyOnly' collects enemy/again only.
+  let phase: "full" | "enemyOnly" = "full";
   let buffer: string[] = [];
-  const prompt = (i: number): void => {
-    const p = PROMPTS[i];
-    if (p) stdout.write(p);
-  };
-  prompt(0);
+  let stable: Stable = { poolLine: "", teamLine: "", modeLine: "" };
 
-  rl.on("line", (line) => {
-    buffer.push(line);
-    if (buffer.length < PROMPTS.length) {
-      prompt(buffer.length); // prompt for the next field
-      return;
+  const promptFor = (): void => {
+    if (phase === "full") {
+      stdout.write(PROMPTS[buffer.length] ?? "");
+    } else {
+      stdout.write(buffer.length === 0 ? ENEMY_ONLY_PROMPT : (PROMPTS[AGAIN] ?? ""));
     }
-    const keepGoing = runMatchup(buffer);
+  };
+  promptFor();
+
+  /** Process a completed buffer: run the matchup, then branch on the trailing "Another?" answer. */
+  const finishRound = (): void => {
+    let enemyLine: string, againLine: string;
+    if (phase === "full") {
+      stable = { poolLine: buffer[POOL] ?? "", teamLine: buffer[TEAM] ?? "", modeLine: buffer[MODE] ?? "" };
+      enemyLine = buffer[ENEMY] ?? "";
+      againLine = buffer[AGAIN] ?? "";
+    } else {
+      enemyLine = buffer[0] ?? "";
+      againLine = buffer[1] ?? "";
+    }
+    runMatchup(stable, enemyLine);
+
+    const again = againLine.trim().toLowerCase();
     buffer = [];
-    if (!keepGoing) {
+    if (again === "n") {
       rl.close();
       return;
     }
-    prompt(0); // next matchup
+    phase = again === "r" ? "full" : "enemyOnly"; // 'r' resets pool/team/mode; else keep them
+    promptFor();
+  };
+
+  const roundLen = (): number => (phase === "full" ? PROMPTS.length : 2); // enemyOnly = enemy + again
+
+  rl.on("line", (line) => {
+    buffer.push(line);
+    if (buffer.length < roundLen()) {
+      promptFor();
+      return;
+    }
+    finishRound();
   });
 
-  // EOF (piped input exhausted, or Ctrl+D): if a partial matchup was entered, run it; then exit.
+  // EOF (piped input exhausted / Ctrl+D): run a complete-enough partial, then exit.
   rl.on("close", () => {
-    if (buffer.length > 0) runMatchup(buffer);
+    const need = phase === "full" ? ENEMY + 1 : 1; // enough to have an enemy line
+    if (buffer.length >= need) {
+      if (phase === "full") {
+        stable = { poolLine: buffer[POOL] ?? "", teamLine: buffer[TEAM] ?? "", modeLine: buffer[MODE] ?? "" };
+        runMatchup(stable, buffer[ENEMY] ?? "");
+      } else {
+        runMatchup(stable, buffer[0] ?? "");
+      }
+    }
   });
 }
 

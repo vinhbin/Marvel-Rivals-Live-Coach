@@ -37,6 +37,9 @@ The engine + post-game coach run locally with no Overwolf — type a roster, get
 npm run coach
 ```
 
-Enter the enemy comp, your team, and your comfort pool (comma-separated hero names); it prints the
-recommended pick/swap/hold and the full post-game review (matchup table, alternatives, pool gaps).
+Enter your comfort pool, your team, and the mode once (comma-separated hero names), then the enemy
+comp last (it's what fills in / changes as a draft develops). It prints the recommended
+pick/swap/hold + the full review (matchup table, alternatives, pool gaps). On "Another?", press
+Enter to re-enter **only a new enemy comp** (your team + pool are kept), `r` to reset everything, or
+`n` to quit.
 Useful for testing advice quality in real drafts (alt-tab + type what you see) before live wiring.
