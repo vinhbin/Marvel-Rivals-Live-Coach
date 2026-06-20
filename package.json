@@ -11,6 +11,7 @@
     "validate": "tsx src/schema/validate.ts",
     "typecheck": "tsc --noEmit",
     "coach": "tsx src/cli/coach.ts",
+    "scenarios": "tsx src/cli/scenarios.ts",
     "test": "tsx --test test/engine.test.ts test/postgame.test.ts test/gep.test.ts test/cli.test.ts"
   },
   "devDependencies": {
