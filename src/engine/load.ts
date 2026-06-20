@@ -75,6 +75,8 @@ export interface PlaystyleModifier {
   raise: CompFunctionKey[];
   lower: CompFunctionKey[];
   note?: string;
+  /** Self-directed anti-meta read shown when the ENEMY matches this archetype (D-008). */
+  counterRead?: string;
 }
 
 /**
@@ -160,6 +162,7 @@ export function loadKb(): LoadedKb {
       raise: (def.raise ?? []) as CompFunctionKey[],
       lower: (def.lower ?? []) as CompFunctionKey[],
       note: def.note,
+      counterRead: def.counter_read,
     });
   }
 

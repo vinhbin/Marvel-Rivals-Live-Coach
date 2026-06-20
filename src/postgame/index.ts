@@ -16,6 +16,8 @@ import {
   recommend,
   resolveName,
   mechanismsProvidedBy,
+  coverageCounts,
+  detectArchetype,
   getKb,
   type EngineInput,
   type LoadedKb,
@@ -86,6 +88,15 @@ export function analyzePostGame(input: EngineInput, kb: LoadedKb = getKb()): Pos
   const result = recommend(input, kb);
 
   const teamKeys = resolvedKeys(input.team, kb);
+
+  // Enemy comp archetype + anti-meta read (INFORM-ONLY — does not change the recommendation).
+  // Reuses the same generic archetype detector the team side uses, applied to the enemy's functions.
+  const enemyKeys = resolvedKeys(input.enemy, kb);
+  const enemyArchetype = detectArchetype(coverageCounts(enemyKeys, kb), kb);
+  const enemyRead = enemyArchetype
+    ? kb.playstyle.find((p) => p.name === enemyArchetype)?.counterRead ?? null
+    : null;
+
   const onTeam = new Set(teamKeys);
   // Distinct, known pool heroes NOT already fielded — the heroes a swap/pick could actually bring
   // (a hero you already play is not a "could have answered with" suggestion).
@@ -189,6 +200,8 @@ export function analyzePostGame(input: EngineInput, kb: LoadedKb = getKb()): Pos
       poolSize: poolKeys.length,
     },
     headline: result.suggestion,
+    enemyArchetype,
+    enemyRead,
     matchup,
     alternatives,
     poolGaps,

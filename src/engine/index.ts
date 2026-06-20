@@ -24,6 +24,7 @@ export type {
 // PUBLIC surface rather than reaching into internals. Export-only — no logic change.
 export { resolveName, isMaskedName } from "./load.js";
 export { mechanismsProvidedBy } from "./conditional.js";
+export { coverageCounts, detectArchetype } from "./comp.js";
 export type {
   LoadedKb,
   CanonicalKey,

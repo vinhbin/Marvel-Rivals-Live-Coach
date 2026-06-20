@@ -107,6 +107,58 @@ test("a threat NOTHING in the pool answers lands in poolGaps with empty couldHav
   }
 });
 
+test("detects a triple-support enemy and surfaces a self-directed anti-meta read", () => {
+  const input: EngineInput = {
+    enemy: ["Groot", "Magneto", "Luna", "Mantis", "Cloak and Dagger"],
+    team: ["Doctor Strange", "Thing", "Hawkeye", "Punisher", "Luna"],
+    comfortPool: ["Psylocke", "Punisher"],
+    mode: "pick",
+  };
+  const report = analyzePostGame(input);
+  assert.equal(report.enemyArchetype, "triple-support");
+  assert.ok(report.enemyRead && report.enemyRead.length > 0, "an anti-meta read is present");
+  // self-directed framing: no "ban"/"shut down enemy" language (D-008)
+  assert.ok(!/\bban\b/i.test(report.enemyRead!) && !/shut down/i.test(report.enemyRead!));
+});
+
+test("detects a dive enemy archetype", () => {
+  const input: EngineInput = {
+    enemy: ["Spider-Man", "Black Panther", "Wolverine", "Luna", "Mantis"],
+    team: ["Doctor Strange", "Hawkeye", "Luna"],
+    comfortPool: ["Thing", "Peni Parker"],
+    mode: "pick",
+  };
+  const report = analyzePostGame(input);
+  assert.equal(report.enemyArchetype, "dive");
+  assert.ok(report.enemyRead && report.enemyRead.length > 0);
+});
+
+test("an unclassifiable / sparse enemy yields a null archetype + null read (no crash)", () => {
+  const input: EngineInput = {
+    enemy: ["Gambit"],
+    team: ["Hela"],
+    comfortPool: ["Magneto"],
+    mode: "pick",
+  };
+  const report = analyzePostGame(input);
+  assert.equal(report.enemyArchetype, null);
+  assert.equal(report.enemyRead, null);
+});
+
+test("the anti-meta read is always one defined in the KB (no hardcoded prose)", () => {
+  const kbReads = new Set(
+    kb.playstyle.map((p) => p.counterRead).filter((r): r is string => typeof r === "string"),
+  );
+  const input: EngineInput = {
+    enemy: ["Groot", "Magneto", "Luna", "Mantis", "Cloak and Dagger"],
+    team: ["Doctor Strange", "Thing"],
+    comfortPool: ["Psylocke"],
+    mode: "pick",
+  };
+  const report = analyzePostGame(input);
+  assert.ok(report.enemyRead === null || kbReads.has(report.enemyRead), "read comes from the KB");
+});
+
 test("each matchup row lists ALL counter heroes regardless of pool (incl. ones you don't own)", () => {
   // Black Panther is countered_by Thing/Thor/Hulk/Invisible Woman in the KB. The pool here has none
   // of those — so couldHaveAnswered is empty, but `counters` must still surface the full set.

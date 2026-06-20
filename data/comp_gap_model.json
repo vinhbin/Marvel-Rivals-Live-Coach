@@ -81,17 +81,26 @@
       "trigger": ">=3 heroes with dive_flank",
       "raise": ["burst_pick", "ult_denial_defensive"],
       "lower": ["range_poke"],
-      "note": "Dive needs follow-up burst and a frontline that enables it; static poke supports clash with it."
+      "note": "Dive needs follow-up burst and a frontline that enables it; static poke supports clash with it.",
+      "counter_read": "They'll collapse your backline — value peel and a CC-immune frontline; group so divers can't pick you off alone."
+    },
+    "triple-support": {
+      "trigger": ">=3 sustain_healing",
+      "raise": ["anti_heal", "ult_denial_defensive", "dive_flank"],
+      "note": "A heal-stack out-sustains a straight DPS race. Precedence: checked BEFORE brawl, since a triple-heal comp often also satisfies the brawl trigger.",
+      "counter_read": "They out-sustain you — a damage race loses. Prioritize anti-heal, deny their support ults, and dive their backline to remove a healer."
     },
     "brawl": {
       "trigger": ">=2 frontline_space AND >=2 sustain_healing AND <2 dive_flank",
       "raise": ["anti_heal", "zone_wall", "anti_dive_peel"],
-      "note": "Brawl mirrors are won with anti-heal + zone control; vulnerable if backline unprotected."
+      "note": "Brawl mirrors are won with anti-heal + zone control; vulnerable if backline unprotected.",
+      "counter_read": "Sustained close fights — anti-heal and zone control swing the mirror; don't feed their frontline."
     },
     "poke": {
       "trigger": ">=3 range_poke",
       "raise": ["anti_dive_peel", "anti_flyer_grounding"],
-      "note": "Poke comps are dive-bait; they need peel and grounding or they get collapsed."
+      "note": "Poke comps are dive-bait; they need peel and grounding or they get collapsed.",
+      "counter_read": "They win from range — close distance and break sightlines; bring dive or a shield to force them off their angles."
     }
   },
 

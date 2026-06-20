@@ -81,6 +81,11 @@ export interface PostGameReport {
   };
   /** The engine's primary call, unchanged (Pick | Swap | Hold). */
   headline: Suggestion;
+  /** The ENEMY comp's detected archetype (dive/brawl/poke/triple-support), or null if none fires. */
+  enemyArchetype: string | null;
+  /** Self-directed anti-meta read for the enemy archetype (from the KB), or null. INFORM-ONLY —
+   *  this does NOT change the recommendation; it's strategy advice alongside it (D-008). */
+  enemyRead: string | null;
   matchup: MatchupRow[];
   alternatives: AlternativeRow[];
   poolGaps: PoolGap[];

@@ -32,6 +32,8 @@ export function buildCompGapSchema(opts: {
       raise: z.array(fn).optional(),
       lower: z.array(fn).optional(),
       note: z.string().optional(),
+      // Self-directed anti-meta read shown when the ENEMY matches this archetype (D-008).
+      counter_read: z.string().optional(),
     })
     .strict();
 

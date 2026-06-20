@@ -42,7 +42,14 @@ export function formatReport(report: PostGameReport): string {
   L.push("══════════════════════════════════════════════════════════");
   L.push(` RECOMMENDATION: ${formatHeadline(report.headline)}`);
   L.push("══════════════════════════════════════════════════════════");
-  L.push(`mode: ${meta.mode}   archetype: ${meta.archetype ?? "—"}   team: ${meta.teamSize}   pool: ${meta.poolSize}`);
+  L.push(`mode: ${meta.mode}   your archetype: ${meta.archetype ?? "—"}   team: ${meta.teamSize}   pool: ${meta.poolSize}`);
+
+  // --- enemy strategy read (inform-only) ---
+  if (report.enemyArchetype) {
+    L.push("");
+    L.push(`── ENEMY STRATEGY: ${report.enemyArchetype} ──`);
+    if (report.enemyRead) L.push(`  ${report.enemyRead}`);
+  }
 
   // --- matchup table ---
   L.push("");
