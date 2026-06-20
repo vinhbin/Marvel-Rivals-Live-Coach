@@ -450,7 +450,7 @@
       "notes": "High mobility/survivability; answer with range-from-safety + CC during float/slam.",
       "countered_by": [
         {
-          "hero": "Jean Grey",
+          "hero": "Phoenix",
           "mechanism": "burst_range"
         },
         {
@@ -552,7 +552,7 @@
           "mechanism": "displacement"
         },
         {
-          "hero": "Jean Grey",
+          "hero": "Phoenix",
           "mechanism": "hard_cc"
         },
         {
@@ -587,7 +587,7 @@
           "mechanism": "mobility_dive"
         },
         {
-          "hero": "Jean Grey",
+          "hero": "Phoenix",
           "mechanism": "burst_range"
         },
         {
@@ -661,7 +661,7 @@
       "notes": "Thrives on sustain vs low-burst comps; add burst/CC and he folds. Loses pound-for-pound.",
       "countered_by": [
         {
-          "hero": "Jean Grey",
+          "hero": "Phoenix",
           "mechanism": "burst_range"
         },
         {
@@ -985,7 +985,7 @@
         "range_poke"
       ]
     },
-    "Jean Grey": {
+    "Phoenix": {
       "role": "Duelist",
       "counterability": "low",
       "notes": "'No counters'; good vs nearly the whole field. Beat only by setting your own terms + range-advantage heroes.",
@@ -1024,7 +1024,7 @@
           "mechanism": "burst_range"
         },
         {
-          "hero": "Jean Grey",
+          "hero": "Phoenix",
           "mechanism": "burst_range"
         },
         {
@@ -1132,7 +1132,7 @@
           "mechanism": "ult_turnaround"
         },
         {
-          "hero": "Jean Grey",
+          "hero": "Phoenix",
           "mechanism": "burst_range"
         },
         {
@@ -1208,7 +1208,7 @@
       "notes": "Good vs low-tier picks, bad vs long-range + all-in dive; zoned by frontline. Deny the ult reset. Don't get hooked.",
       "countered_by": [
         {
-          "hero": "Jean Grey",
+          "hero": "Phoenix",
           "mechanism": "range_poke"
         },
         {
@@ -1479,7 +1479,7 @@
       "notes": "No CC, weak damage; relentless chase + hitscan beats him; pre-break res beacons. Counter his ult by walking on it.",
       "countered_by": [
         {
-          "hero": "Jean Grey",
+          "hero": "Phoenix",
           "mechanism": "hitscan"
         },
         {
@@ -1527,7 +1527,7 @@
       "notes": "Elite vs dive/brawl; weak ONLY to hitscan-from-range in isolation; with a dive comp she beats even her counters. Also an answer hero.",
       "countered_by": [
         {
-          "hero": "Jean Grey",
+          "hero": "Phoenix",
           "mechanism": "range_poke"
         },
         {

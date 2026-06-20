@@ -54,12 +54,10 @@ nicknames opportunistically for CLI comfort; invest real care in canonical keys 
 
 ## CANONICAL NAMING (Season 8.5) — official in-game name = key; everything else = alias
 
-Still-pending decision the dev must confirm before encoding:
-- **Phoenix vs Jean Grey:** current data keys her **"Jean Grey"** (Phoenix as alias). Dev says
-  official name is **Phoenix**. DECIDE before touching her entry; if flipping, rename the key in ALL
-  files + swap the alias (same procedure as the Winter Soldier rename done 2026-06-20).
-
 Resolved decisions (don't re-litigate):
+- **Jean Grey → Phoenix:** DONE 2026-06-20 — full key rename across registry + counter_kb (10 refs)
+  + comp_gap_model; Jean Grey/Jean/Jean Gray = aliases. (gep_character_name set to "Phoenix" —
+  confirm vs GEP in the spike.)
 - **Bucky → Winter Soldier:** DONE — full key rename across all files; Bucky/Bucky Barnes/WS = aliases.
 - **Deadpool:** keep **3 role-split keys** (Deadpool_Tank/_DPS/_Strat); bare "Deadpool" = ambiguous,
   resolved live via the GEP spike. Nicknames not aliased (would silently pick a variant).

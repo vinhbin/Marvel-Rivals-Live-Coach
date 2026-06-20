@@ -311,16 +311,16 @@
       "role": "Duelist",
       "aliases": []
     },
-    "Jean Grey": {
+    "Phoenix": {
       "character_id": 31,
-      "canonical_key": "Jean Grey",
-      "display_name": "Jean Grey",
-      "gep_character_name": "Jean Grey",
+      "canonical_key": "Phoenix",
+      "display_name": "Phoenix",
+      "gep_character_name": "Phoenix",
       "role": "Duelist",
       "aliases": [
-        "Phoenix",
-        "Gan",
-        "Gene"
+        "Jean Grey",
+        "Jean",
+        "Jean Gray"
       ]
     },
     "Psylocke": {
@@ -543,11 +543,11 @@
     "mister fantastic": "Mr Fantastic",
     "moon knight": "Moon Knight",
     "namor": "Namor",
-    "jean grey": "Jean Grey",
-    "phoenix": "Jean Grey",
-    "pheonix": "Jean Grey",
-    "gan": "Jean Grey",
-    "gene": "Jean Grey",
+    "jean grey": "Phoenix",
+    "phoenix": "Phoenix",
+    "pheonix": "Phoenix",
+    "gan": "Phoenix",
+    "gene": "Phoenix",
     "psylocke": "Psylocke",
     "psylock": "Psylocke",
     "sai": "Psylocke",
@@ -584,8 +584,8 @@
     "mr f": "Mr Fantastic",
     "mk": "Moon Knight",
     "moonknight": "Moon Knight",
-    "jean": "Jean Grey",
-    "jean gray": "Jean Grey",
+    "jean": "Phoenix",
+    "jean gray": "Phoenix",
     "psy": "Psylocke",
     "wanda": "Scarlet Witch",
     "sw": "Scarlet Witch",

@@ -58,7 +58,7 @@
     "Iron Man":         ["range_poke"],
     "Storm":            ["range_poke", "dive_flank"],
     "Elsa":             ["range_poke", "burst_pick"],
-    "Jean Grey":        ["range_poke", "burst_pick"],
+    "Phoenix":          ["range_poke", "burst_pick"],
     "Namor":            ["range_poke", "anti_dive_peel"],
     "Gambit":           ["burst_pick", "anti_heal"],
     "Blade":            ["dive_flank", "anti_heal"],
