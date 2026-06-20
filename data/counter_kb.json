@@ -75,7 +75,7 @@
         "Moon Knight",
         "Hawkeye",
         "Star-Lord",
-        "Bucky"
+        "Winter Soldier"
       ],
       "via": [
         "range_poke",
@@ -136,7 +136,7 @@
           "mechanism": "grounding"
         },
         {
-          "hero": "Bucky",
+          "hero": "Winter Soldier",
           "mechanism": "grounding"
         },
         {
@@ -164,7 +164,7 @@
           "mechanism": "anti_dive"
         },
         {
-          "hero": "Bucky",
+          "hero": "Winter Soldier",
           "mechanism": "hard_cc"
         },
         {
@@ -323,7 +323,7 @@
       "notes": "Map-dependent oppressive; beat by wall-break stacking OR heroes that go over walls.",
       "countered_by": [
         {
-          "hero": "Bucky",
+          "hero": "Winter Soldier",
           "mechanism": "wall_break"
         },
         {
@@ -365,7 +365,7 @@
           "mechanism": "burst_range"
         },
         {
-          "hero": "Bucky",
+          "hero": "Winter Soldier",
           "mechanism": "hard_cc"
         },
         {
@@ -454,7 +454,7 @@
           "mechanism": "burst_range"
         },
         {
-          "hero": "Bucky",
+          "hero": "Winter Soldier",
           "mechanism": "burst_range"
         },
         {
@@ -489,7 +489,7 @@
           "mechanism": "burst_range"
         },
         {
-          "hero": "Bucky",
+          "hero": "Winter Soldier",
           "mechanism": "burst_range"
         },
         {
@@ -560,7 +560,7 @@
           "mechanism": "hard_cc"
         },
         {
-          "hero": "Bucky",
+          "hero": "Winter Soldier",
           "mechanism": "hard_cc"
         },
         {
@@ -665,7 +665,7 @@
           "mechanism": "burst_range"
         },
         {
-          "hero": "Bucky",
+          "hero": "Winter Soldier",
           "mechanism": "burst_range"
         },
         {
@@ -806,7 +806,7 @@
       "notes": "Permaflyer; grounding + hitscan answer cleanly. Luna/Adam dominate.",
       "countered_by": [
         {
-          "hero": "Bucky",
+          "hero": "Winter Soldier",
           "mechanism": "grounding"
         },
         {
@@ -846,7 +846,7 @@
           "mechanism": "brawl"
         },
         {
-          "hero": "Bucky",
+          "hero": "Winter Soldier",
           "mechanism": "burst_range"
         }
       ],
@@ -868,7 +868,7 @@
           "mechanism": "hitscan"
         },
         {
-          "hero": "Bucky",
+          "hero": "Winter Soldier",
           "mechanism": "hitscan"
         },
         {
@@ -1051,7 +1051,7 @@
       "notes": "TTK problem; any fast-killing hero + CC punishes. Skill-floor counter (needs your aim).",
       "countered_by": [
         {
-          "hero": "Bucky",
+          "hero": "Winter Soldier",
           "mechanism": "burst_range"
         },
         {
@@ -1202,7 +1202,7 @@
         "wall_break"
       ]
     },
-    "Bucky": {
+    "Winter Soldier": {
       "role": "Duelist",
       "counterability": "medium",
       "notes": "Good vs low-tier picks, bad vs long-range + all-in dive; zoned by frontline. Deny the ult reset. Don't get hooked.",
