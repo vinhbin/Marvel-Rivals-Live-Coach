@@ -38,6 +38,12 @@ export interface MatchupRow {
   answeredByCurrentComp: boolean;
   /** Pool heroes that would have answered this threat (empty => see poolGaps). */
   couldHaveAnswered: ThreatAnswer[];
+  /**
+   * EVERY hero that counters this threat, regardless of your pool (the enemy's full countered_by set
+   * — a self-directed "heroes you could pick/learn to beat this", never a ban / enemy scoreboard).
+   * Superset of couldHaveAnswered.
+   */
+  counters: ThreatAnswer[];
 }
 
 /** One row of the full ranked option space (design §6: "what you could've swapped to"). */

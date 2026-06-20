@@ -109,6 +109,20 @@ export function analyzePostGame(input: EngineInput, kb: LoadedKb = getKb()): Pos
       }
     }
 
+    // Every hero that counters this threat (the enemy's countered_by edges), regardless of pool —
+    // a self-directed "heroes you could pick/learn", grouped by hero with the mechanism(s) it brings.
+    const counterMechs = new Map<CanonicalKey, MechanismKey[]>();
+    for (const edge of kb.counter.get(t.hero)?.countered_by ?? []) {
+      const list = counterMechs.get(edge.hero) ?? [];
+      if (!list.includes(edge.mechanism)) list.push(edge.mechanism);
+      counterMechs.set(edge.hero, list);
+    }
+    const counters: ThreatAnswer[] = [...counterMechs].map(([hero, viaMechanisms]) => ({
+      hero,
+      displayName: displayOf(hero, kb),
+      viaMechanisms,
+    }));
+
     return {
       hero: t.hero,
       displayName: displayOf(t.hero, kb),
@@ -121,6 +135,7 @@ export function analyzePostGame(input: EngineInput, kb: LoadedKb = getKb()): Pos
       conditionalCovered: t.conditionalCovered,
       answeredByCurrentComp,
       couldHaveAnswered,
+      counters,
     };
   });
 

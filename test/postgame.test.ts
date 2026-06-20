@@ -107,6 +107,25 @@ test("a threat NOTHING in the pool answers lands in poolGaps with empty couldHav
   }
 });
 
+test("each matchup row lists ALL counter heroes regardless of pool (incl. ones you don't own)", () => {
+  // Black Panther is countered_by Thing/Thor/Hulk/Invisible Woman in the KB. The pool here has none
+  // of those — so couldHaveAnswered is empty, but `counters` must still surface the full set.
+  const input: EngineInput = {
+    enemy: ["Black Panther"],
+    team: ["Hela"],
+    comfortPool: ["Hela"], // no Black Panther counter in the pool
+    mode: "pick",
+  };
+  const report = analyzePostGame(input);
+  const row = report.matchup.find((r) => r.displayName === "Black Panther");
+  assert.ok(row, "Black Panther has a matchup row");
+  const counterNames = row.counters.map((c) => c.displayName);
+  assert.ok(counterNames.includes("Thing"), `Thing should be a listed counter (got ${counterNames})`);
+  assert.ok(counterNames.length >= 2, "multiple counters listed");
+  // and these are listed even though none are in the pool
+  assert.equal(row.couldHaveAnswered.length, 0, "none of the counters are in this pool");
+});
+
 test("alternatives mirror the engine's full ranked list (not just the top pick)", () => {
   const input: EngineInput = {
     enemy: ["Human Torch", "Iron Man", "Gambit", "Hulk"],

@@ -53,12 +53,16 @@ export function formatReport(report: PostGameReport): string {
   for (const m of report.matchup) {
     const answered = m.answeredByCurrentComp ? "✓ answered" : "✗ open";
     const could = m.couldHaveAnswered.length
-      ? `  could play: ${m.couldHaveAnswered.map((c) => c.displayName).join(", ")}`
+      ? `  from your pool: ${m.couldHaveAnswered.map((c) => c.displayName).join(", ")}`
       : "";
     const cond = m.counterability === "conditional"
       ? ` [conditional:${m.conditionalCovered ? "covered" : "uncovered"}]`
       : "";
     L.push(`  ${m.displayName.padEnd(18)} w=${r1(m.weight)} ${m.counterability}${cond}  ${answered}${could}`);
+    // full counter list regardless of pool — "heroes you could pick/learn" (self-directed, never a ban)
+    if (m.counters.length) {
+      L.push(`      all counters: ${m.counters.map((c) => c.displayName).join(", ")}`);
+    }
   }
 
   // --- pool gaps ---
