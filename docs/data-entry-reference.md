@@ -43,16 +43,26 @@ dive_flank, zone_wall, anti_heal, ult_denial_defensive`
 `counterability` drives threat weight (weights.json): low=1.0 (highest), high≈0.35 (lowest),
 conditional = resolved at runtime (covered vs uncovered) by whether YOUR pool delivers an answer.
 
+## On aliases — manual-CLI scaffolding, NOT critical path
+
+Nickname aliases (Cap, Widow, Spidey, …) exist ONLY because the dev hand-types names into the CLI
+today. With live GEP, the roster arrives as exact `character_name`/`character_id` — the user never
+types a hero name — so nicknames become unused. **Don't treat nickname completeness as important.**
+The alias that DOES matter long-term is each hero's `gep_character_name` (the GEP→canonical join),
+and the TRUE value of that field can only be confirmed in the real-match spike (Q-001). So: add
+nicknames opportunistically for CLI comfort; invest real care in canonical keys + gep_character_name.
+
 ## CANONICAL NAMING (Season 8.5) — official in-game name = key; everything else = alias
 
-Two pending decisions the dev must confirm before encoding (current data and the dev's review disagree):
+Still-pending decision the dev must confirm before encoding:
 - **Phoenix vs Jean Grey:** current data keys her **"Jean Grey"** (Phoenix as alias). Dev says
   official name is **Phoenix**. DECIDE before touching her entry; if flipping, rename the key in ALL
-  files + swap the alias.
-- **Deadpool:** counter_kb splits him into **Deadpool_Tank / Deadpool_DPS / Deadpool_Strat**;
-  registry has **one** Deadpool (multi-role, GEP emits one "Deadpool" name — A3/Q-001). DECIDE: one
-  multi-role entry vs three keyed variants. The split currently exists for matchup tagging; don't
-  "fix" it without resolving this deliberately.
+  files + swap the alias (same procedure as the Winter Soldier rename done 2026-06-20).
+
+Resolved decisions (don't re-litigate):
+- **Bucky → Winter Soldier:** DONE — full key rename across all files; Bucky/Bucky Barnes/WS = aliases.
+- **Deadpool:** keep **3 role-split keys** (Deadpool_Tank/_DPS/_Strat); bare "Deadpool" = ambiguous,
+  resolved live via the GEP spike. Nicknames not aliased (would silently pick a variant).
 
 ### Vanguards
 Captain America (Cap) · Devil Dinosaur (Dino, Devil Dino) · Doctor Strange (Strange, Doc Strange, DS) ·
@@ -75,7 +85,13 @@ Invisible Woman (Invis, Sue, IW, Sue Storm) · Jeff the Land Shark (Jeff, Shark)
 Luna Snow (Luna) · Mantis · Rocket Raccoon (Rocket, Raccoon) · Ultron · White Fox (Fox, WF, Ami)
 
 ### Multi-Role
-Deadpool (DP, Wade, Pool) — see the Deadpool decision above.
+Deadpool — kept as 3 role-split keys (Deadpool_Tank/_DPS/_Strat); bare "Deadpool" resolves to
+**ambiguous** by design (gated on the GEP spike, Q-001). DP/Wade/Pool nicknames are INTENTIONALLY
+NOT aliased: an alias can only point to one variant, which would silently pick a role and break the
+deliberate ambiguity. Revisit when the spike resolves role disambiguation.
+
+> RESOLVED 2026-06-20: Bucky → **Winter Soldier** (full key rename across registry + counter_kb +
+> comp_gap_model; "Bucky"/"Bucky Barnes"/"WS" are aliases). Deadpool model confirmed: keep 3 variants.
 
 > Known prior mishearings to NOT alias as real names: "Neymar" (→ Namor), "Gan Gray"/"Gene"
 > (→ Jean Grey/Phoenix).
