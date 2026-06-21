@@ -65,6 +65,22 @@ export function formatReport(report: PostGameReport): string {
   L.push("══════════════════════════════════════════════════════════");
   L.push(`mode: ${meta.mode}   your archetype: ${meta.archetype ?? "—"}   team: ${meta.teamSize}   pool: ${meta.poolSize}`);
 
+  // --- your comp health (standalone: is YOUR comp even functional?) ---
+  const ch = report.compHealth;
+  L.push("");
+  L.push("── YOUR COMP HEALTH ──");
+  const rc = ch.roleCounts;
+  const unresolved = ch.unresolved > 0 ? `   (${ch.unresolved} unresolved)` : "";
+  L.push(`  roles: ${rc.Vanguard} tank / ${rc.Duelist} DPS / ${rc.Strategist} support${unresolved}`);
+  if (ch.shortfalls.length === 0) {
+    L.push("  ✓ all core roles covered");
+  } else {
+    for (const s of ch.shortfalls) {
+      const flag = s.critical ? "⚠ CRITICAL" : "·";
+      L.push(`  ${flag} ${s.label} (${s.providers}/${s.ideal})`);
+    }
+  }
+
   // --- enemy strategy read (inform-only) ---
   if (report.enemyArchetype) {
     L.push("");

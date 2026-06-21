@@ -69,6 +69,30 @@ export interface PoolGap {
   neededMechanisms: MechanismKey[];
 }
 
+/** One comp-function that the CURRENT team is short of its ideal provider count. */
+export interface FunctionShortfall {
+  fn: CompFunctionKey;
+  label: string;
+  ideal: number;
+  providers: number;
+  /** ideal>=1 && providers==0 — a function the comp completely lacks (the loud one). */
+  critical: boolean;
+}
+
+/**
+ * Standalone read of YOUR comp's structural health — "is this comp even functional?" — independent
+ * of the enemy. Role split (2-2-2 sanity) + which comp-functions are below ideal. Computed purely
+ * from the resolved team + the registry/comp-model; no enemy data, no engine logic.
+ */
+export interface CompHealth {
+  /** Resolved role counts on our side (Vanguard/Duelist/Strategist => tank/dps/heal-ish). */
+  roleCounts: { Vanguard: number; Duelist: number; Strategist: number };
+  /** Number of roster slots that did not resolve to a known hero (masked/unknown/ambiguous). */
+  unresolved: number;
+  /** Functions below their ideal provider count, worst (critical) first. */
+  shortfalls: FunctionShortfall[];
+}
+
 /** The full post-game review. */
 export interface PostGameReport {
   meta: {
@@ -79,6 +103,8 @@ export interface PostGameReport {
     /** Distinct known heroes in the comfort pool. */
     poolSize: number;
   };
+  /** Standalone health of YOUR comp (role split + function shortfalls), independent of the enemy. */
+  compHealth: CompHealth;
   /** The engine's primary call, unchanged (Pick | Swap | Hold). */
   headline: Suggestion;
   /** The ENEMY comp's detected archetype (dive/brawl/poke/triple-support), or null if none fires. */

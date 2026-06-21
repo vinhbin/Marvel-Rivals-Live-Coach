@@ -36,6 +36,41 @@ function resolveKey(name: string): string | null {
 // 1. HAND-JUDGED assertions over real matchups
 // ---------------------------------------------------------------------------
 
+test("compHealth: an all-DPS team reports 0 tank / 0 support and CRITICAL sustain + frontline gaps", () => {
+  const input: EngineInput = {
+    enemy: ["Gambit", "Luna"],
+    team: ["Hela", "Hawkeye", "Punisher"], // 3 Duelists, no Vanguard, no Strategist
+    comfortPool: ["Luna", "Hulk"],
+    mode: "pick",
+  };
+  const { compHealth } = analyzePostGame(input);
+  assert.deepEqual(compHealth.roleCounts, { Vanguard: 0, Duelist: 3, Strategist: 0 });
+  assert.equal(compHealth.unresolved, 0);
+  const shortKeys = compHealth.shortfalls.map((s) => s.fn);
+  assert.ok(shortKeys.includes("sustain_healing"), "no healer => sustain_healing is short");
+  assert.ok(shortKeys.includes("frontline_space"), "no tank => frontline_space is short");
+  // The two roles the comp completely lacks must be flagged critical (0 providers).
+  const sustain = compHealth.shortfalls.find((s) => s.fn === "sustain_healing")!;
+  const frontline = compHealth.shortfalls.find((s) => s.fn === "frontline_space")!;
+  assert.equal(sustain.critical, true);
+  assert.equal(frontline.critical, true);
+  assert.equal(sustain.providers, 0);
+  // Critical gaps sort to the front.
+  assert.equal(compHealth.shortfalls[0]!.critical, true);
+});
+
+test("compHealth: unresolved roster slots are counted, not silently dropped", () => {
+  const input: EngineInput = {
+    enemy: ["Gambit"],
+    team: ["Hulk", "garbagehero", "*****"], // 1 resolves, 2 do not
+    comfortPool: ["Luna"],
+    mode: "pick",
+  };
+  const { compHealth } = analyzePostGame(input);
+  assert.equal(compHealth.roleCounts.Vanguard, 1, "Hulk resolves as the one tank");
+  assert.equal(compHealth.unresolved, 2, "the two unresolved names are counted");
+});
+
 test("headline mirrors the engine suggestion exactly (projection, not re-derivation)", () => {
   // Fixture 4: Gambit/Luna/Doctor Strange enemy -> engine picks Magneto.
   const input: EngineInput = {

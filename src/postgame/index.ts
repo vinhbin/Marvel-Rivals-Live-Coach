@@ -33,6 +33,8 @@ import type {
   AlternativeRow,
   PoolGap,
   ThreatAnswer,
+  CompHealth,
+  FunctionShortfall,
 } from "./types.js";
 
 export type {
@@ -41,6 +43,8 @@ export type {
   AlternativeRow,
   PoolGap,
   ThreatAnswer,
+  CompHealth,
+  FunctionShortfall,
 } from "./types.js";
 
 /** Resolve a raw roster to the canonical keys the engine would tag (dropping masked/unknown/ambiguous). */
@@ -78,6 +82,39 @@ function shortFunctions(team: CanonicalKey[], kb: LoadedKb): Set<CompFunctionKey
     if ((counts.get(fn) ?? 0) < def.ideal) short.add(fn);
   }
   return short;
+}
+
+/**
+ * Standalone comp-health read: role split + which comp-functions the CURRENT team is short on.
+ * Independent of the enemy — answers "is this comp even functional?". `unresolved` is the count of
+ * roster slots that didn't resolve (so an all-typo team doesn't masquerade as a 0-hero comp).
+ * Shortfalls are ordered critical-first (provider==0), then by how far below ideal.
+ */
+function buildCompHealth(rawTeam: string[], teamKeys: CanonicalKey[], kb: LoadedKb): CompHealth {
+  const roleCounts = { Vanguard: 0, Duelist: 0, Strategist: 0 };
+  for (const h of teamKeys) {
+    const role = kb.roleOf.get(h);
+    if (role) roleCounts[role] += 1;
+  }
+  const counts = coverageCounts(teamKeys, kb);
+  const shortfalls: FunctionShortfall[] = [];
+  for (const [fn, def] of kb.compFunctions) {
+    const providers = counts.get(fn) ?? 0;
+    if (providers < def.ideal) {
+      shortfalls.push({
+        fn,
+        label: def.label,
+        ideal: def.ideal,
+        providers,
+        critical: def.ideal >= 1 && providers === 0,
+      });
+    }
+  }
+  // Critical (0 providers) first, then by largest shortfall.
+  shortfalls.sort(
+    (a, b) => Number(b.critical) - Number(a.critical) || (b.ideal - b.providers) - (a.ideal - a.providers),
+  );
+  return { roleCounts, unresolved: rawTeam.length - teamKeys.length, shortfalls };
 }
 
 /**
@@ -199,6 +236,7 @@ export function analyzePostGame(input: EngineInput, kb: LoadedKb = getKb()): Pos
       teamSize: input.team.length,
       poolSize: poolKeys.length,
     },
+    compHealth: buildCompHealth(input.team, teamKeys, kb),
     headline: result.suggestion,
     enemyArchetype,
     enemyRead,
