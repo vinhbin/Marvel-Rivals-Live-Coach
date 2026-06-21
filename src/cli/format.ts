@@ -78,9 +78,12 @@ export function formatGlance(report: PostGameReport): string {
     action = why ? `${verb}  ·  ${why}` : verb;
   }
 
-  // TOP OPEN THREAT — highest-weight enemy your CURRENT comp does not answer (a real mid-game worry).
+  // TOP OPEN THREAT — highest-weight enemy still unanswered AFTER you take the recommendation.
+  // Must exclude threats the recommended hero answers, or the glance contradicts its own advice
+  // ("SWAP to White Fox … but Luna still open" when White Fox is precisely the Luna answer).
+  const answeredBySuggestion = new Set(h.kind === "hold" ? [] : h.answersThreats);
   const open = report.matchup
-    .filter((m) => !m.answeredByCurrentComp)
+    .filter((m) => !m.answeredByCurrentComp && !answeredBySuggestion.has(m.hero))
     .sort((a, b) => b.weight - a.weight)[0];
   let threatLine = "";
   if (open) {

@@ -144,6 +144,25 @@ test("formatGlance: omits the 'still open' line when the current comp answers ev
   assert.ok(!/still open/.test(glance), "no open-threat line when nothing is open");
 });
 
+test("formatGlance: a threat the RECOMMENDATION answers is NOT shown as 'still open' (no self-contradiction)", () => {
+  // Current comp doesn't answer Luna, but the recommended swap (White Fox) does. The glance must not
+  // say "swap to White Fox … but Luna still open" — White Fox IS the Luna answer.
+  const input: EngineInput = {
+    enemy: ["Doctor Strange", "Hulk", "Iron Man", "Scarlet Witch", "Invisible Woman", "Luna"],
+    team: ["Hawkeye", "Cloak and Dagger", "Gambit", "Magneto"],
+    comfortPool: ["White Fox", "Punisher", "Hulk", "Doctor Strange"],
+    mode: "swap",
+  };
+  const report = analyzePostGame(input);
+  // Sanity: the recommendation is a swap into a hero that answers Luna.
+  assert.equal(report.headline.kind, "swap");
+  if (report.headline.kind === "swap") {
+    assert.ok(report.headline.answersThreats.includes("Luna"), "precondition: the rec answers Luna");
+  }
+  const glance = formatGlance(report);
+  assert.ok(!/still open: Luna/.test(glance), "Luna is closed by the rec, so not 'still open'");
+});
+
 test("formatGlance never throws on a degraded report", () => {
   const report = analyzePostGame({ enemy: ["*****"], team: [], comfortPool: ["NotAHero"], mode: "pick" });
   assert.doesNotThrow(() => formatGlance(report));
