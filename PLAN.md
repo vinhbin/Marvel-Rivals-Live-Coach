@@ -314,6 +314,7 @@ Every cut is logged in `docs/decision-log.md`. No silent removal.
 - **D-010 (2026-06-19):** Platform choice (native vs ow-electron) is an OPEN user decision (Q-005); don't default to native; blocks Overwolf scaffolding only, not the engine.
 - **D-011 (2026-06-19):** Mechanism vocab reconciled by moderate collapse to a closed 24-token set; merge map in the registry. (Logged at Phase 0; listed here for completeness.)
 - **D-012 (2026-06-19):** Phase 1 engine semantics — enforce 2-2-2 role queue (legal-slot constraint), graceful-skip the unresolved Deadpool name pre-spike, support both Pick and Swap modes from day one.
+- **D-013 (2026-06-21):** Team-ups are a season-volatile synergy layer (Q-007) — logged + scoped, NOT added to the durable static KBs; build with the ult-combo/synergy phase once an engine term exists to consume them.
 
 ---
 
@@ -327,6 +328,7 @@ Every cut is logged in `docs/decision-log.md`. No silent removal.
 - [ ] **Q-004 — Is the single-expert VOD counter KB good enough, and how is staleness handled?** Council + research flagged edge-count-as-signal bias + single-correlated-source. Mitigation: per-edge provenance + confidence tag (research refinement #8), `valid_for_patch` stamp, validate against own games. **Owner: me (revisit after golden fixtures exist).**
 - [ ] **Q-005 — Overwolf NATIVE vs ow-electron? — STILL DEFERRED (re-confirmed 2026-06-19 at Phase 3).** User chose again to defer and build only platform-NEUTRAL Phase 3 parts (`src/gep/` imports no Overwolf API). ow-electron avoids the native "no private apps" wall + free hosting; native is lighter but needs email whitelisting + blocks private apps; GEP API differs (costly to switch). **Blocks ONLY the platform-specific listener shim (the thing that feeds `src/gep/`). Owner: YOU (settle before writing the listener).**
 - [ ] **Q-006 — Does GEP `kill_feed` attribute the KILLER (character_name / mappable uid) next to the victim?** Gates macro reads #1/#2 (Phase 6.2); read #3 (tempo) ships regardless. **Test in the same real-match spike as Q-001. Protocol ready: `docs/gep-spike-protocol.md` §3. Owner: me.**
+- [ ] **Q-007 — Team-ups: where does the season-volatile synergy layer live, what schema, which engine term consumes it?** Team-ups buff a hero based on a specific teammate and change per season (D-013). NOT added to the durable static KBs. Candidates: extend the patch overlay vs a new `data/team_up_table.json`; needs a `buffer→receiver/effect/valid_for_season` schema + a synergy term in the objective. Build with the ult-combo/synergy phase (still a stub). **Owner: me (design before authoring any team-up data).**
   - ⚠️ **Compliance watch-item (review note, Phase 3):** the Phase-3 GEP boundary deliberately STRIPS teammate `ult_charge` entirely. When the macro/tempo layer (Phase 6.1) is wired to live GEP it will need its OWN narrowly-scoped `ult_charge` ingestion path that enforces `is_teammate === true` at the point of consumption — do NOT relax the strict exclusion in `src/gep/schema.ts`; add a separate guarded path.
 
 ---

@@ -6,6 +6,36 @@ decision without escalation.
 
 ---
 
+## 2026-06-21  D-013: Team-ups are a SEASON-VOLATILE synergy layer — log + scope, do NOT add to the static KBs yet
+
+**Decision.** Marvel Rivals **team-ups** (a hero gaining an ability/buff from a specific teammate,
+changing per season) are a real, in-scope feature for the coach — but they are **NOT** added to the
+durable static KBs (`counter_kb.json` / `comp_gap_model.json`) now. They are logged as a planned
+feature (Q-007) and built later as their own **season-stamped synergy layer**, most naturally as
+part of the unwritten ult-combo / synergy phase. Until that layer + an engine term to consume it
+exist, no team-up data is authored.
+
+**Rationale.** Three reasons not to rush it:
+1. **Architecture says quarantine volatility.** CLAUDE.md: "Mechanics live in the static KBs
+   (durable); strength lives in the patch overlay (volatile, synced per patch); never hardcode
+   'hero X is strong'." Team-ups change every season — they are volatile, like the patch overlay,
+   and must NOT pollute the durable counter/comp files.
+2. **No engine consumer exists.** The engine does counter-coverage + comp-gap only; it has no
+   synergy/team-up scoring term. `ult_combo_table.json` (the natural consumer) is still a stub.
+   Authoring team-up data today = dead data that drifts out of sync before anything reads it.
+3. **It needs its own design pass.** Team-ups have structure (buffer→receiver, effect, passive vs
+   ult-combo, `valid_for_season`) — a new schema + vocab + an objective term. That's a phase, not a
+   batch edit; it deserves brainstorming → decision-log treatment like every other layer got.
+
+**Scope.** Captures the feature so it isn't forgotten; blocks nothing currently in flight. The
+durable KBs stay clean. Revisit when the ult-combo/synergy phase is designed.
+
+**Cross-references.** CLAUDE.md "Architecture (4 layers)" + ult_combo_table TODO; PLAN.md Q-007;
+design §9 (ult-combo table). Open: where it lives (patch overlay vs a new `team_up_table.json`),
+its schema, and which engine term scores it.
+
+---
+
 ## 2026-06-19  D-012: Phase 1 engine semantics — 2-2-2 role queue, Deadpool graceful-skip, both Pick+Swap modes
 
 **Decision.** Three implementation choices for the Phase 1 engine, settled with the user before
