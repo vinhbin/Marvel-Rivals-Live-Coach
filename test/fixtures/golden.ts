@@ -122,6 +122,25 @@ export const GOLDEN: GoldenFixture[] = [
     expect: { kind: "hold" },
   },
   {
+    name: "an UNCOVERED conditional must not read as a max-tier threat (unknown != dangerous)",
+    rationale:
+      "Spider-Man is counterability=conditional, answered only by survive_onslaught / cc_immune_body — " +
+      "which neither the team nor the pool can deliver, so he stays UNCOVERED. The fix (weights.json) " +
+      "makes an uncovered conditional score 0.6 (moderate, == 'medium'), NOT 1.0 (the 'low'/hardest " +
+      "tier). Because Spider-Man is genuinely unanswerable here, the engine must NOT be dragged toward " +
+      "chasing him; it should answer the threat the pool CAN handle — Storm (flyer) via Punisher " +
+      "(grounding/hitscan), which also fills the comp's poke+grounding gap. Regression guard: under the " +
+      "old uncovered_weight=1.0 an unanswerable Spider-Man dominated the objective and steered the pick. " +
+      "Spider-Man correctly surfaces as a POOL GAP (add an answer), never as a forced/max threat.",
+    input: {
+      enemy: ["Spider-Man", "Storm", "Luna"],
+      team: ["Doctor Strange", "Hulk", "Luna"],
+      comfortPool: ["Punisher", "Mantis"],
+      mode: "pick",
+    },
+    expect: { kind: "pick", hero: "Punisher" },
+  },
+  {
     name: "role queue is respected: a full DPS line cannot take another duelist",
     rationale:
       "Team already has 2 duelists (Hela, Hawkeye). The pool's only duelist (Psylocke) is illegal under " +

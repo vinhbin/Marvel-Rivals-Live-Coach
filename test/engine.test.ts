@@ -61,6 +61,34 @@ for (const fx of GOLDEN) {
 }
 
 // ---------------------------------------------------------------------------
+// 1b. FOCUSED REGRESSION — the uncovered-conditional weight (weights.json fix).
+// ---------------------------------------------------------------------------
+test("regression: an uncovered conditional is weighted MODERATE, never the max 'low' tier", () => {
+  // Spider-Man (conditional), answered only by survive_onslaught / cc_immune_body — not deliverable
+  // by this team or pool, so he stays uncovered. The fix says an uncovered conditional must score the
+  // conditional 'uncovered' weight (moderate), strictly below counterability_weight.low (the ceiling).
+  const r = recommend({
+    enemy: ["Spider-Man", "Storm", "Luna"],
+    team: ["Doctor Strange", "Hulk", "Luna"],
+    comfortPool: ["Punisher", "Mantis"],
+    mode: "pick",
+  });
+  const spidey = r.threats.find((t) => t.hero === "Spider-Man");
+  assert.ok(spidey, "Spider-Man should be tagged as a threat");
+  assert.equal(spidey!.covered, false, "Spider-Man must be uncovered in this scenario");
+  const lowTier = kb.weights.counterability_weight.low; // 1.0 — the hardest tier
+  assert.ok(
+    spidey!.weight < lowTier,
+    `uncovered conditional weight ${spidey!.weight} must be < low-tier ${lowTier} (unknown != max threat)`,
+  );
+  assert.equal(
+    spidey!.weight,
+    kb.weights.conditional_resolution.uncovered_weight,
+    "uncovered conditional must use conditional_resolution.uncovered_weight",
+  );
+});
+
+// ---------------------------------------------------------------------------
 // 2. PROPERTY INVARIANTS — over the golden fixtures + a deterministic fuzz set.
 // ---------------------------------------------------------------------------
 
