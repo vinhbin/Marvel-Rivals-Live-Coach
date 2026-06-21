@@ -271,7 +271,7 @@
     "Doctor Strange": {
       "role": "Vanguard",
       "counterability": "medium",
-      "notes": "Solid all-round tank; CC stacking frustrates him. NOT a top-tier must-answer threat (dev: medium, not low).",
+      "notes": "Solid all-round tank; CC stacking frustrates him, and brawlers run him down off his shield/position. NOT a top-tier must-answer threat (dev: medium, not low).",
       "countered_by": [
         {
           "hero": "Wolverine",
@@ -292,6 +292,18 @@
         {
           "hero": "Rogue",
           "mechanism": "burst_range"
+        },
+        {
+          "hero": "Devil Dinosaur",
+          "mechanism": "brawl"
+        },
+        {
+          "hero": "Groot",
+          "mechanism": "brawl"
+        },
+        {
+          "hero": "Hulk",
+          "mechanism": "brawl"
         }
       ],
       "provides_mechanisms": [
@@ -390,6 +402,7 @@
         }
       ],
       "provides_mechanisms": [
+        "brawl",
         "grounding",
         "mark",
         "mobility_dive",
@@ -782,6 +795,7 @@
         }
       ],
       "provides_mechanisms": [
+        "burst_range",
         "range_poke"
       ]
     },
@@ -974,7 +988,7 @@
     "Namor": {
       "role": "Duelist",
       "counterability": "medium",
-      "notes": "Good vs field; kill the squids constantly. Has real answers — NOT a Gambit-tier must-answer threat (dev: medium, not low).",
+      "notes": "Good vs field; turret-shreds DIVERS (do NOT dive him — he counters Spider-Man et al unless they massively outskill). Real answers: tanks brawl him off his turrets, and burst-from-range deletes him before he sets up. The burst edges (Hela/Phoenix/Winter Soldier/Hawkeye) are favorable 1v1s, not hard counters — could go either way on skill. NOT a Gambit-tier must-answer threat (dev: medium, not low).",
       "countered_by": [
         {
           "hero": "Groot",
@@ -991,6 +1005,30 @@
         {
           "hero": "Magneto",
           "mechanism": "range_poke"
+        },
+        {
+          "hero": "Devil Dinosaur",
+          "mechanism": "brawl"
+        },
+        {
+          "hero": "Thor",
+          "mechanism": "brawl"
+        },
+        {
+          "hero": "Hela",
+          "mechanism": "burst_range"
+        },
+        {
+          "hero": "Phoenix",
+          "mechanism": "burst_range"
+        },
+        {
+          "hero": "Winter Soldier",
+          "mechanism": "burst_range"
+        },
+        {
+          "hero": "Hawkeye",
+          "mechanism": "burst_range"
         }
       ],
       "provides_mechanisms": [
