@@ -248,6 +248,18 @@
         {
           "hero": "Blade",
           "mechanism": "anti_heal"
+        },
+        {
+          "hero": "Phoenix",
+          "mechanism": "range_poke"
+        },
+        {
+          "hero": "Mantis",
+          "mechanism": "range_poke"
+        },
+        {
+          "hero": "Adam",
+          "mechanism": "range_poke"
         }
       ],
       "provides_mechanisms": [
