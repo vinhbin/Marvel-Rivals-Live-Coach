@@ -663,7 +663,27 @@
     "ultron": "Ultron",
     "white fox": "White Fox",
     "cyclops": "Cyclops",
-    "cyke": "Cyclops"
+    "cyke": "Cyclops",
+    "whitefox": "White Fox",
+    "blackcat": "Black Cat",
+    "blackpanther": "Black Panther",
+    "blackwidow": "Black Widow",
+    "humantorch": "Human Torch",
+    "scarletwitch": "Scarlet Witch",
+    "squirrelgirl": "Squirrel Girl",
+    "wintersoldier": "Winter Soldier",
+    "peniparker": "Peni Parker",
+    "doctorstrange": "Doctor Strange",
+    "docstrange": "Doctor Strange",
+    "emmafrost": "Emma Frost",
+    "captainamerica": "Captain America",
+    "devildinosaur": "Devil Dinosaur",
+    "mrfantastic": "Mr Fantastic",
+    "adamwarlock": "Adam",
+    "lunasnow": "Luna",
+    "rocketraccoon": "Rocket",
+    "cloakanddagger": "Cloak and Dagger",
+    "invisiblewoman": "Invisible Woman"
   },
   "unresolved_gep_collisions": {
     "Deadpool": {
