@@ -493,6 +493,10 @@
         {
           "hero": "Luna",
           "mechanism": "hard_cc"
+        },
+        {
+          "hero": "Peni Parker",
+          "mechanism": "anti_dive"
         }
       ],
       "provides_mechanisms": [
@@ -553,6 +557,10 @@
         {
           "hero": "Devil Dinosaur",
           "mechanism": "cc_immune_body"
+        },
+        {
+          "hero": "Peni Parker",
+          "mechanism": "anti_dive"
         }
       ],
       "provides_mechanisms": [
@@ -622,6 +630,10 @@
         {
           "hero": "White Fox",
           "mechanism": "peel"
+        },
+        {
+          "hero": "Peni Parker",
+          "mechanism": "anti_dive"
         }
       ],
       "provides_mechanisms": [
@@ -649,6 +661,10 @@
         {
           "hero": "Invisible Woman",
           "mechanism": "peel"
+        },
+        {
+          "hero": "Peni Parker",
+          "mechanism": "anti_dive"
         }
       ],
       "provides_mechanisms": [
@@ -874,6 +890,10 @@
         {
           "hero": "Winter Soldier",
           "mechanism": "burst_range"
+        },
+        {
+          "hero": "Peni Parker",
+          "mechanism": "anti_dive"
         }
       ],
       "provides_mechanisms": [
