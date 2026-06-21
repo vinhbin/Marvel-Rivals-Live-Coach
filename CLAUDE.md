@@ -47,6 +47,7 @@ one engine + types across overlay and any backend).
 - `data/macro_reader.json` — live event-stream → coaching reads (nemesis / team-threat / tempo). The "play" layer (D-008).
 - `data/ult_combo_table.json` — synergistic ult pairs. **TODO: not written yet.**
 - `data/patch_overlay.json` — per-patch hero strength (L2). **TODO: sync from stat API.**
+- `data/my_pool.json` — your personal comfort pool (the heroes you play). NOT a KB — the `npm run coach` CLI loads it as the default pool; empty/missing → all-heroes mode. Hand-edited.
 
 > Planning state lives in `PLAN.md` (phases, contracts, open questions) and `docs/decision-log.md`
 > (D-001…D-010). Read those before building. **Engine optimization is a constrained objective +

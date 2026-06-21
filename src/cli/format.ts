@@ -20,6 +20,27 @@ export function parseNames(line: string): string[] {
     .filter((s) => s.length > 0);
 }
 
+/**
+ * Decide which comfort pool the engine should use, given (in priority order):
+ *   1. a pool typed this session (overrides everything),
+ *   2. the saved pool from data/my_pool.json,
+ *   3. nothing → fall back to ALL heroes ("best pick from anyone", with a note).
+ *
+ * Pure (no file I/O): the caller supplies the saved pool and the full hero-key list. Returns the
+ * resolved pool plus `usingAllHeroes` so the CLI can show the "no pool set" note. Recommending from
+ * all heroes is a CLI default only — the engine contract is unchanged (it always recommends from the
+ * pool it is handed); we just choose what pool to hand it.
+ */
+export function resolvePoolSource(
+  typedPool: string[],
+  savedPool: string[],
+  allHeroKeys: string[],
+): { pool: string[]; usingAllHeroes: boolean; source: "typed" | "saved" | "all" } {
+  if (typedPool.length > 0) return { pool: typedPool, usingAllHeroes: false, source: "typed" };
+  if (savedPool.length > 0) return { pool: savedPool, usingAllHeroes: false, source: "saved" };
+  return { pool: allHeroKeys, usingAllHeroes: true, source: "all" };
+}
+
 const r1 = (n: number): number => Math.round(n * 10) / 10;
 
 /** One-line headline: the engine's primary call. */

@@ -11,10 +11,30 @@
  */
 import { createInterface } from "node:readline";
 import { stdin, stdout } from "node:process";
+import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+import { dirname, resolve } from "node:path";
 
 import { analyzePostGame } from "../postgame/index.js";
+import { getKb } from "../engine/index.js";
 import type { EngineInput, EngineMode } from "../engine/index.js";
-import { parseNames, formatReport } from "./format.js";
+import { parseNames, formatReport, resolvePoolSource } from "./format.js";
+
+/**
+ * Load the saved comfort pool from data/my_pool.json (your personal roster). Missing/garbled file →
+ * empty pool (the CLI then falls back to all-heroes). Never throws — this is convenience, not a hard
+ * dependency.
+ */
+function loadSavedPool(): string[] {
+  try {
+    const here = dirname(fileURLToPath(import.meta.url));
+    const path = resolve(here, "../../data/my_pool.json");
+    const parsed = JSON.parse(readFileSync(path, "utf8"));
+    return Array.isArray(parsed?.pool) ? parsed.pool.filter((h: unknown): h is string => typeof h === "string") : [];
+  } catch {
+    return [];
+  }
+}
 
 /**
  * Prompts for the FIRST matchup, in input order. Your stable inputs (pool, team) come first; the
@@ -36,21 +56,33 @@ interface Stable {
   modeLine: string;
 }
 
+/** All canonical hero keys (the fallback "pool" when none is set → recommend from anyone). */
+const ALL_HERO_KEYS: string[] = [...getKb().roleOf.keys()];
+
+/** The saved comfort pool from data/my_pool.json, loaded once at startup. */
+const SAVED_POOL: string[] = loadSavedPool();
+
 /** Run one matchup from the stable inputs + the current enemy line; print the report. */
 function runMatchup(stable: Stable, enemyLine: string): void {
   const mode = stable.modeLine.trim().toLowerCase();
+  const { pool, usingAllHeroes } = resolvePoolSource(
+    parseNames(stable.poolLine),
+    SAVED_POOL,
+    ALL_HERO_KEYS,
+  );
   const input: EngineInput = {
     enemy: parseNames(enemyLine),
     team: parseNames(stable.teamLine),
-    comfortPool: parseNames(stable.poolLine),
+    comfortPool: pool,
     ...(mode === "pick" || mode === "swap" ? { mode: mode as EngineMode } : {}),
   };
 
-  if (input.comfortPool.length === 0) {
-    stdout.write("\n(need at least one comfort-pool hero to recommend from)\n\n");
-  } else {
-    stdout.write("\n" + formatReport(analyzePostGame(input)) + "\n\n");
+  if (usingAllHeroes) {
+    stdout.write(
+      "\n(no pool set — showing the best pick from ALL heroes; set data/my_pool.json to personalize)\n",
+    );
   }
+  stdout.write("\n" + formatReport(analyzePostGame(input)) + "\n\n");
 }
 
 // Index of the prompts in PROMPTS we still ask on every loop (pool, team, mode, enemy, again).
@@ -62,7 +94,12 @@ function main(): void {
 
   stdout.write("\nRivals Coach — manual input (no game needed). Enter comma-separated hero names.\n");
   stdout.write("Your pool + team are entered once and kept; only the enemy comp is re-asked as it\n");
-  stdout.write("fills in. Empty line = skip. Ctrl+C to quit. Names use display names or aliases.\n\n");
+  stdout.write("fills in. Empty line = skip. Ctrl+C to quit. Names use display names or aliases.\n");
+  if (SAVED_POOL.length > 0) {
+    stdout.write(`Pool: press Enter to use your saved pool (${SAVED_POOL.length} heroes from data/my_pool.json), or type one to override.\n\n`);
+  } else {
+    stdout.write("Pool: empty = recommend from ALL heroes. Set data/my_pool.json to personalize.\n\n");
+  }
 
   // Two phases: 'full' collects pool/team/mode/enemy/again; 'enemyOnly' collects enemy/again only.
   let phase: "full" | "enemyOnly" = "full";

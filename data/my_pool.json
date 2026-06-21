@@ -1,0 +1,11 @@
+{
+  "_doc": "Your personal comfort pool — the heroes you actually play. The coach recommends a pick/swap FROM this list (that's what makes it YOUR coach, not a generic tier list). The CLI (npm run coach) loads this as the default pool; press Enter at the pool prompt to use it, or type a pool to override for one session. Leave the list empty to get all-heroes 'best pick from anyone' advice. NOT a knowledge base — just your roster. Edit freely; names use display names or aliases (resolved via the registry).",
+  "pool": [
+    "Hawkeye",
+    "Punisher",
+    "Hulk",
+    "Invisible Woman",
+    "White Fox",
+    "Doctor Strange"
+  ]
+}

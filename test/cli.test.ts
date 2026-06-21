@@ -8,7 +8,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import { parseNames, formatReport, formatHeadline } from "../src/cli/format.js";
+import { parseNames, formatReport, formatHeadline, resolvePoolSource } from "../src/cli/format.js";
 import { analyzePostGame } from "../src/postgame/index.js";
 import type { EngineInput } from "../src/engine/index.js";
 
@@ -24,8 +24,30 @@ test("parseNames splits on commas and trims, dropping empties", () => {
 });
 
 // ---------------------------------------------------------------------------
-// formatHeadline — the one-line call
+// resolvePoolSource — typed pool > saved pool > all-heroes fallback
 // ---------------------------------------------------------------------------
+
+test("resolvePoolSource: a typed pool overrides the saved pool", () => {
+  const r = resolvePoolSource(["Hela"], ["Punisher", "Hulk"], ["Hela", "Punisher", "Hulk", "Luna"]);
+  assert.deepEqual(r.pool, ["Hela"]);
+  assert.equal(r.usingAllHeroes, false);
+  assert.equal(r.source, "typed");
+});
+
+test("resolvePoolSource: no typed pool falls back to the saved pool", () => {
+  const r = resolvePoolSource([], ["Punisher", "Hulk"], ["Hela", "Punisher", "Hulk", "Luna"]);
+  assert.deepEqual(r.pool, ["Punisher", "Hulk"]);
+  assert.equal(r.usingAllHeroes, false);
+  assert.equal(r.source, "saved");
+});
+
+test("resolvePoolSource: no typed AND no saved pool falls back to ALL heroes (with the flag set)", () => {
+  const all = ["Hela", "Punisher", "Hulk", "Luna"];
+  const r = resolvePoolSource([], [], all);
+  assert.deepEqual(r.pool, all);
+  assert.equal(r.usingAllHeroes, true);
+  assert.equal(r.source, "all");
+});
 
 test("formatHeadline renders a pick with the hero name and the rationale", () => {
   const input: EngineInput = {
