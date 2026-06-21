@@ -52,7 +52,7 @@
     "Black Panther":    ["dive_flank", "burst_pick"],
     "Black Cat":        ["dive_flank", "burst_pick"],
     "Daredevil":        ["dive_flank", "burst_pick"],
-    "Wolverine":        ["dive_flank"],
+    "Wolverine":        ["dive_flank", "burst_pick"],
     "Moon Knight":      ["range_poke", "burst_pick"],
     "Squirrel Girl":    ["range_poke", "zone_wall"],
     "Iron Man":         ["range_poke"],
