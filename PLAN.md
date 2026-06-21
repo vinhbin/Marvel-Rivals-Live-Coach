@@ -6,7 +6,8 @@
 **What / deadline:** GEP-only Overwolf coaching overlay for Marvel Rivals (game `24890`) — reads
 the live roster, recommends a single pick/swap/hold from the user's comfort pool. **No hard
 deadline** (personal / unlisted build).
-**Repo:** local (`c:\Users\Binep\Marvel-Rivals-Live-Coach`) — no remote yet.
+**Repo:** local (`c:\Users\Binep\Marvel-Rivals-Live-Coach`) + remote `origin` →
+`github.com/vinhbin/Marvel-Rivals-Live-Coach` (pushed 2026-06-21). `main` tracks `origin/main`.
 **Team:** solo (vinhbin).
 **Goal:** "done" = the engine gives advice the dev trusts in their own ranked games, surfaced
 glanceably live and in depth post-game — without ever crossing the compliance boundary.
@@ -30,6 +31,25 @@ When two artifacts disagree, the higher one wins. Fix the LOWER artifact to matc
 ---
 
 ## Status snapshot (APPEND a new dated block on top each session; never overwrite the last one)
+
+### 2026-06-21 (data-quality + CLI-UX session) — coaching strengthened from dev game knowledge; first push to GitHub
+
+- ✅ **First push to GitHub.** `origin` → `github.com/vinhbin/Marvel-Rivals-Live-Coach`; full history pushed, `main` tracks `origin/main`. (PLAN's old "no remote yet" note corrected.)
+- ✅ **Structural scoring fix (the headline):** `conditional_resolution.uncovered_weight` 1.0→0.6, `covered_weight` 0.6→0.4. An *uncovered conditional* (Jeff, Moon Knight, Spider-Man, Squirrel Girl, Wolverine, Cyclops) was tying the `low`/max tier (Gambit/Phoenix/Dino) — "unknown ≠ max threat" violation. Now reads moderate, never max. Locked with a golden fixture + a focused weight-regression test. The genuine `low` tier is now just **Devil Dinosaur / Phoenix / Gambit** (Namor + Doctor Strange dropped low→medium — dev: not Gambit-tier).
+- ✅ **Counter-graph corrections (dev game knowledge, all inverse-consistent / 0.7 green):**
+  - Devil Dinosaur `countered_by` += Phoenix/Mantis/Adam (`range_poke`, head-poke from the S8 VOD).
+  - Doctor Strange `countered_by` += Devil Dinosaur/Groot/Hulk (`brawl`; required tagging Hulk a brawler).
+  - Namor `countered_by` += Devil Dinosaur/Thor (`brawl`) + Hela/Phoenix/Winter Soldier/Hawkeye (`burst_range`, noted as favorable 1v1s not hard counters); Hawkeye gained `burst_range`. **Dev correction:** Namor *counters* divers (turret-shred) — do NOT add divers as his counter.
+  - **Peni Parker** `answer_heroes` summary ↔ edges reconciled: added Peni (`anti_dive`) to Black Panther/Iron Fist/Black Cat/Thor/**Rogue** — the summary claimed 4 of these but the engine had zero edges, so it never credited her.
+  - Wolverine `hero_functions` += `burst_pick` (tank shredder).
+- ✅ **CLI UX (live-test driven), all behind pure helpers + tested (100/100):**
+  - **Pool persistence** — `data/my_pool.json` holds your comfort pool; CLI loads it as default (Enter = use saved). Empty pool → **all-heroes mode** with a note (no more "need a pool" dead-end).
+  - **`── YOUR COMP HEALTH ──`** standalone section (role split + function shortfalls, critical-first) — surfaces "is MY comp broken?" separately from the enemy read.
+  - **Mid-game GLANCE line** at the report's end (action + why + worst-still-open threat). **Bug caught + fixed live:** "still open" now excludes threats the *recommendation* answers (was contradicting its own advice).
+  - 24 alias fixes (`dare devil`, `rouge`→Rogue, + 21 no-space squished names) — each surfaced as a corrupted live recommendation.
+- ✅ **D-013 / Q-007:** team-ups scoped as a season-volatile synergy layer — logged, NOT added to the durable KBs (no engine consumer yet; ult-combo table still a stub).
+- 🟢 **Engine/data contracts unchanged; all UX is CLI-level projection.** `npm run validate` + `npm test` (100/100) + `npm run typecheck` green throughout. The manual CLI is still scaffolding (live GEP sends exact names) — alias/typo work is comfort-only.
+- 🟢 **Unchanged blockers:** Q-001/Q-006 (real-match GEP spike) + Q-005 (platform) remain the user's, live-gated.
 
 ### 2026-06-19 (Phase 3 platform-neutral slice COMPLETE) — GEP ingestion built + tested off-line; spike protocol ready for the user
 
@@ -346,4 +366,4 @@ Every cut is logged in `docs/decision-log.md`. No silent removal.
 
 ---
 
-_Last updated: 2026-06-19 (Phase 3 platform-neutral slice complete — GEP ingestion built + tested; spike protocol ready for the user; next = run the live spike) by me._
+_Last updated: 2026-06-21 (data-quality + CLI-UX session — conditional-weight fix, counter-graph corrections from dev game knowledge, pool persistence + comp-health + mid-game glance, first GitHub push; next = run the live GEP spike or feed more matchup facts) by me._
