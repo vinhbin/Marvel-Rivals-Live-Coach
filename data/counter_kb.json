@@ -270,8 +270,8 @@
     },
     "Doctor Strange": {
       "role": "Vanguard",
-      "counterability": "low",
-      "notes": "Lukewarm vs field, few weaknesses; only CC stacking truly frustrates him.",
+      "counterability": "medium",
+      "notes": "Solid all-round tank; CC stacking frustrates him. NOT a top-tier must-answer threat (dev: medium, not low).",
       "countered_by": [
         {
           "hero": "Wolverine",
@@ -973,8 +973,8 @@
     },
     "Namor": {
       "role": "Duelist",
-      "counterability": "low",
-      "notes": "Few bad matchups; good vs field. Kill the squids constantly.",
+      "counterability": "medium",
+      "notes": "Good vs field; kill the squids constantly. Has real answers — NOT a Gambit-tier must-answer threat (dev: medium, not low).",
       "countered_by": [
         {
           "hero": "Groot",
