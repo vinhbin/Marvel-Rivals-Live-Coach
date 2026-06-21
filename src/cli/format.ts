@@ -55,6 +55,43 @@ export function formatHeadline(s: Suggestion): string {
   return `PICK ${s.hero}  (${conf})  ${s.rationale}`;
 }
 
+/**
+ * The mid-game GLANCE line — the single thing to read during a swap window: the action, why it
+ * helps, and the worst enemy threat your CURRENT comp still can't answer. Deliberately one block,
+ * placed at the END of the report (where your eyes land last). design §6 "live mode: one line max".
+ */
+export function formatGlance(report: PostGameReport): string {
+  const h = report.headline;
+
+  // ACTION + WHY.
+  let action: string;
+  if (h.kind === "hold") {
+    action = `HOLD — ${h.reason}`;
+  } else {
+    const verb = h.kind === "swap" ? `SWAP ${h.replaces} → ${h.hero}` : `PICK ${h.hero}`;
+    // "why" = the gap it closes and/or the threats it answers, whichever it has (closes reads better).
+    const why = h.closesFunctions.length
+      ? `closes ${h.closesFunctions.join(", ")}`
+      : h.answersThreats.length
+        ? `answers ${h.answersThreats.slice(0, 3).join(", ")}`
+        : "";
+    action = why ? `${verb}  ·  ${why}` : verb;
+  }
+
+  // TOP OPEN THREAT — highest-weight enemy your CURRENT comp does not answer (a real mid-game worry).
+  const open = report.matchup
+    .filter((m) => !m.answeredByCurrentComp)
+    .sort((a, b) => b.weight - a.weight)[0];
+  let threatLine = "";
+  if (open) {
+    const gap = report.poolGaps.find((g) => g.hero === open.hero);
+    const needs = gap?.neededMechanisms.length ? ` (needs ${gap.neededMechanisms.join("/")})` : "";
+    threatLine = `\n  ⚠ still open: ${open.displayName}${needs}`;
+  }
+
+  return `▶ ${action}${threatLine}`;
+}
+
 /** The full post-game review as plain text. */
 export function formatReport(report: PostGameReport): string {
   const L: string[] = [];
@@ -138,6 +175,12 @@ export function formatReport(report: PostGameReport): string {
     L.push("── NOTES (degraded / skipped input) ──");
     for (const n of report.notes) L.push(`  [${n.level}] ${n.message}`);
   }
+
+  // --- mid-game glance (the TL;DR, last so it's where your eyes land during a swap window) ---
+  L.push("");
+  L.push("══════════════════════════════════════════════════════════");
+  L.push(formatGlance(report));
+  L.push("══════════════════════════════════════════════════════════");
 
   return L.join("\n");
 }

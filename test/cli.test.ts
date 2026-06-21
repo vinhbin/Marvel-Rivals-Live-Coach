@@ -8,7 +8,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import { parseNames, formatReport, formatHeadline, resolvePoolSource } from "../src/cli/format.js";
+import { parseNames, formatReport, formatHeadline, formatGlance, resolvePoolSource } from "../src/cli/format.js";
 import { analyzePostGame } from "../src/postgame/index.js";
 import type { EngineInput } from "../src/engine/index.js";
 
@@ -108,4 +108,43 @@ test("formatReport never throws on a degraded report", () => {
   const input: EngineInput = { enemy: ["*****"], team: [], comfortPool: ["NotAHero"], mode: "pick" };
   const report = analyzePostGame(input);
   assert.doesNotThrow(() => formatReport(report));
+});
+
+// ---------------------------------------------------------------------------
+// formatGlance — the mid-game one-liner (action + why + top open threat)
+// ---------------------------------------------------------------------------
+
+test("formatGlance: leads with the action and names the worst still-open threat", () => {
+  // Brawl-ish comp; Jeff (uncovered conditional) is the threat the current comp can't answer.
+  const input: EngineInput = {
+    enemy: ["Devil Dinosaur", "Hawkeye", "Jeff"],
+    team: ["Devil Dinosaur", "Emma Frost", "Magneto", "Punisher", "Luna", "Mantis"],
+    comfortPool: ["Hulk", "Doctor Strange"],
+    mode: "swap",
+  };
+  const report = analyzePostGame(input);
+  const glance = formatGlance(report);
+  assert.match(glance, /^▶/, "starts with the glance marker");
+  // It must name the recommended action (pick/swap/hold) — mirror the headline kind.
+  assert.match(glance, /SWAP|PICK|HOLD/);
+  // Jeff is an uncovered conditional with no current-comp answer => it is the 'still open' threat.
+  assert.match(glance, /still open: Jeff/);
+  assert.match(glance, /flat_damage/, "shows what the open threat needs");
+});
+
+test("formatGlance: omits the 'still open' line when the current comp answers everything", () => {
+  // Team already includes Thing (anti-dive answer); a single weak enemy is fully covered.
+  const input: EngineInput = {
+    enemy: ["Black Panther"],
+    team: ["Thing", "Hela", "Luna", "Mantis", "Hulk", "Punisher"],
+    comfortPool: ["Magneto"],
+    mode: "swap",
+  };
+  const glance = formatGlance(analyzePostGame(input));
+  assert.ok(!/still open/.test(glance), "no open-threat line when nothing is open");
+});
+
+test("formatGlance never throws on a degraded report", () => {
+  const report = analyzePostGame({ enemy: ["*****"], team: [], comfortPool: ["NotAHero"], mode: "pick" });
+  assert.doesNotThrow(() => formatGlance(report));
 });
